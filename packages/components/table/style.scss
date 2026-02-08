@@ -1,0 +1,190 @@
+@use '../../theme/src/mixins/table.scss' as *;
+
+.x-table {
+  @include table-base;
+
+  &--small {
+    @include table-size(var(--x-table-small-padding));
+  }
+
+  &--medium {
+    @include table-size(var(--x-table-medium-padding));
+  }
+
+  &--large {
+    @include table-size(var(--x-table-large-padding));
+  }
+
+  &--border {
+    @include table-border;
+  }
+
+  &--stripe {
+    .x-table__row--striped {
+      background-color: var(--x-table-stripe-bg);
+    }
+  }
+
+  &--loading {
+    position: relative;
+  }
+}
+
+.x-table__loading {
+  @include table-loading;
+}
+
+.x-table__container {
+  @include table-container;
+}
+
+.x-table__element {
+  @include table-element;
+}
+
+.x-table__header {
+  @include table-header;
+}
+
+.x-table__body {
+  @include table-body;
+}
+
+.x-table__row {
+  @include table-row;
+
+  &--current {
+    background-color: var(--x-table-current-row-bg);
+  }
+
+  &--selected {
+    background-color: var(--x-color-primary-light-9);
+  }
+}
+
+.x-table__cell {
+  @include table-cell;
+
+  &--left {
+    text-align: left;
+  }
+
+  &--center {
+    text-align: center;
+  }
+
+  &--right {
+    text-align: right;
+  }
+
+  &.is-fixed {
+    background-color: inherit;
+  }
+
+  &.is-sortable {
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      background-color: var(--x-table-header-hover-bg);
+    }
+  }
+}
+
+.x-table__cell-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.x-table__empty {
+  &:hover {
+    background-color: transparent;
+  }
+
+  td {
+    text-align: center;
+    color: var(--x-color-text-secondary);
+    padding: var(--x-spacing-xl) 0;
+  }
+}
+
+.x-table__empty-text {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--x-text-color-secondary);
+  font-size: var(--x-font-size-base);
+}
+
+// 排序图标
+.x-table__sort-icons {
+  display: inline-flex;
+  flex-direction: column;
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.x-table__sort-icon {
+  font-size: 10px;
+  line-height: 1;
+  color: var(--x-text-color-placeholder);
+  transition: color var(--x-transition-duration);
+
+  &.is-active {
+    color: var(--x-color-primary);
+  }
+
+  &--asc {
+    margin-bottom: -2px;
+  }
+
+  &--desc {
+    margin-top: -2px;
+  }
+}
+
+// 展开图标
+.x-table__expand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: transform var(--x-transition-duration);
+  color: var(--x-text-color-regular);
+
+  &.is-expanded {
+    transform: rotate(90deg);
+  }
+
+  &:hover {
+    color: var(--x-color-primary);
+  }
+}
+
+.x-table__expand-row {
+  &:hover {
+    background-color: transparent;
+  }
+
+  td {
+    padding: 12px 20px;
+  }
+}
+
+// 树形单元格
+.x-table__tree-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+// 复选框样式
+input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--x-color-primary);
+}

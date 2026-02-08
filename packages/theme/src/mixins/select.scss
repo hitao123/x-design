@@ -1,0 +1,32 @@
+@mixin select-base {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  font-size: var(--x-font-size-base);
+}
+
+@mixin select-size($height, $padding, $font-size) {
+  .x-select__input-wrapper {
+    height: $height;
+    padding: 0 30px 0 $padding;
+  }
+
+  .x-select__input {
+    font-size: $font-size;
+  }
+}
+
+@mixin select-disabled {
+  cursor: not-allowed;
+
+  .x-select__input-wrapper {
+    background-color: var(--x-disabled-bg-color);
+    border-color: var(--x-disabled-border-color);
+    cursor: not-allowed;
+  }
+
+  .x-select__input {
+    color: var(--x-disabled-text-color);
+    cursor: not-allowed;
+  }
+}

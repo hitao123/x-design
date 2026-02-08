@@ -1,0 +1,21 @@
+/* VitePress 自定义样式 */
+:root {
+  --vp-c-brand: #409eff;
+  --vp-c-brand-light: #66b1ff;
+  --vp-c-brand-dark: #3a8ee6;
+}
+
+.demo-block {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+.demo-actions {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--vp-c-divider);
+  display: flex;
+  gap: 12px;
+}

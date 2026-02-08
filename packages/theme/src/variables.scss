@@ -1,0 +1,19 @@
+// CSS 变量已在 index.scss 中定义
+// 这里仅保留 SCSS 变量以供 mixins 使用
+
+$namespace: 'x' !default;
+
+// 颜色
+$color-primary: #409eff !default;
+$color-success: #67c23a !default;
+$color-warning: #e6a23c !default;
+$color-danger: #f56c6c !default;
+$color-info: #909399 !default;
+
+// 字体
+$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !default;
+
+// Z-index
+$z-index-normal: 1 !default;
+$z-index-top: 1000 !default;
+$z-index-popper: 2000 !default;

@@ -1,0 +1,58 @@
+@use '../../theme/src/mixins/popconfirm.scss' as *;
+
+.x-popconfirm {
+  @include popconfirm-base;
+}
+
+.x-popconfirm__trigger {
+  display: inline-block;
+}
+
+.x-popconfirm__popper {
+  @include popconfirm-popper;
+
+  &--top {
+    transform-origin: center bottom;
+  }
+
+  &--bottom {
+    transform-origin: center top;
+  }
+
+  &--left {
+    transform-origin: right center;
+  }
+
+  &--right {
+    transform-origin: left center;
+  }
+}
+
+.x-popconfirm__content {
+  @include popconfirm-content;
+}
+
+.x-popconfirm__icon {
+  @include popconfirm-icon;
+}
+
+.x-popconfirm__title {
+  @include popconfirm-title;
+}
+
+.x-popconfirm__actions {
+  @include popconfirm-actions;
+}
+
+// Animations
+.x-popconfirm-fade-enter-active,
+.x-popconfirm-fade-leave-active {
+  transition: opacity var(--x-transition-duration) var(--x-transition-function),
+    transform var(--x-transition-duration) var(--x-transition-function);
+}
+
+.x-popconfirm-fade-enter-from,
+.x-popconfirm-fade-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
+}

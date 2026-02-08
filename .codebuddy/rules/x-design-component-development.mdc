@@ -1,0 +1,284 @@
+---
+description: 
+alwaysApply: true
+enabled: true
+updatedAt: 2026-01-31T15:45:51.072Z
+provider: 
+---
+
+# X Design 组件库开发规范
+
+## 项目架构
+
+X Design 是一个基于 Vue 3 + TypeScript 的 PC 端组件库，采用 Monorepo 架构（pnpm workspace）。
+
+### 包结构
+
+```
+packages/
+├── components/      # 组件库主包 @x-design/components
+├── icons/          # 图标独立包 @x-design/icons (参考 @ant-design/icons)
+├── theme/          # SCSS 主题系统 @x-design/theme
+└── utils/          # 工具函数 @x-design/utils
+```
+
+## 组件开发规范
+
+### 1. 目录结构
+
+每个组件按以下结构组织：
+
+```
+packages/components/
+└── button/
+    ├── Button.vue      # 组件实现
+    ├── index.ts        # 导出入口
+    ├── types.ts        # TypeScript 类型定义
+    └── style.scss      # 组件样式
+```
+
+### 2. 组件模板 (Button.vue)
+
+```vue
+<template>
+  <button :class="classes" :type="nativeType" :disabled="disabled" @click="handleClick">
+    <slot />
+  </button>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue';
+import type { ButtonProps } from './types';
+
+defineOptions({
+  name: 'XButton',  // 必须：组件名称，格式 X + PascalCase
+});
+
+const props = withDefaults(defineProps<ButtonProps>(), {
+  type: 'default',
+  size: 'medium',
+  // ... 默认值
+});
+
+const emit = defineEmits<{
+  click: [event: MouseEvent];
+}>();
+
+const classes = computed(() => {
+  return [
+    'x-button',
+    `x-button--${props.type}`,
+    // ... 动态类名
+  ];
+});
+</script>
+
+<style lang="scss">
+@import './style.scss';
+</style>
+```
+
+### 3. 类型定义 (types.ts)
+
+```typescript
+export interface ButtonProps {
+  type?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info';
+  size?: 'small' | 'medium' | 'large';
+  disabled?: boolean;
+}
+```
+
+### 4. 导出入口 (index.ts)
+
+```typescript
+import Button from './Button.vue';
+import { withInstall } from '@x-design/utils';
+
+export const XButton = withInstall(Button);
+export default XButton;
+
+export type { ButtonProps } from './types';
+```
+
+### 5. 组件样式 (style.scss)
+
+```scss
+@use '../../theme/src/mixins/button.scss' as *;
+
+.x-button {
+  @include button-base;  // 使用主题 mixins
+
+  &--primary {
+    @include button-variant(
+      var(--x-color-primary),
+      var(--x-color-primary),
+      var(--x-color-white)
+    );
+  }
+  
+  &--small {
+    @include button-size(
+      var(--x-button-small-height),
+      var(--x-button-small-padding),
+      var(--x-font-size-sm)
+    );
+  }
+}
+```
+
+## 主题系统使用
+
+### CSS 变量定义位置
+
+`packages/theme/index.scss` 定义所有 CSS 变量：
+
+```scss
+:root {
+  // 主题色
+  --x-color-primary: #409eff;
+  --x-color-success: #67c23a;
+  
+  // 组件特定变量
+  --x-button-default-bg: #ffffff;
+  --x-button-medium-height: 32px;
+}
+```
+
+### Mixins 定义位置
+
+`packages/theme/src/mixins/` 目录，为每个组件创建独立 mixin 文件：
+
+```scss
+// packages/theme/src/mixins/button.scss
+@mixin button-base {
+  display: inline-flex;
+  cursor: pointer;
+  // ... 基础样式
+}
+
+@mixin button-variant($bg, $border, $color) {
+  background-color: $bg;
+  border-color: $border;
+  color: $color;
+}
+```
+
+## 图标开发规范（独立包）
+
+### 图标组件结构
+
+```
+packages/icons/
+├── src/
+│   ├── components/
+│   │   └── IconWrapper.vue  # 基础包装器
+│   └── icons/
+│       ├── Close.vue        # 具体图标
+│       └── Check.vue
+└── index.ts                 # 统一导出
+```
+
+### 图标组件模板
+
+```vue
+<template>
+  <IconWrapper v-bind="$props">
+    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+      <path d="..." />
+    </svg>
+  </IconWrapper>
+</template>
+
+<script setup lang="ts">
+import IconWrapper from '../components/IconWrapper.vue';
+import type { IconProps } from '../types';
+
+defineOptions({
+  name: 'IconClose',
+});
+
+defineProps<IconProps>();
+</script>
+```
+
+### 图标 API
+
+```typescript
+export interface IconProps {
+  size?: string | number;  // 默认 '1em'
+  color?: string;          // 默认 'currentColor'
+  rotate?: number;         // 旋转角度
+  spin?: boolean;          // 是否旋转动画
+}
+```
+
+## 组件注册到主包
+
+更新 `packages/components/index.ts`：
+
+```typescript
+export { XButton } from './button';
+export { XInput } from './input';
+
+import { XButton } from './button';
+import { XInput } from './input';
+
+const components = [XButton, XInput];
+
+const install = (app: App) => {
+  components.forEach((component) => {
+    app.component(component.name, component);
+  });
+};
+```
+
+## 文档编写规范
+
+在 `docs/components/` 创建组件文档，包含：
+
+1. **基础用法** - 最简单示例
+2. **不同变体** - type/size 等属性
+3. **状态演示** - disabled/loading 等
+4. **API 表格** - Props/Events/Exposes
+
+示例：
+
+```markdown
+# Button 按钮
+
+## 基础用法
+
+<script setup>
+import { XButton } from '@x-design/components';
+</script>
+
+<div class="demo-block">
+  <XButton type="primary">主要按钮</XButton>
+</div>
+
+\`\`\`vue
+<XButton type="primary">主要按钮</XButton>
+\`\`\`
+
+## API
+
+| 参数 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| type | 按钮类型 | `'primary' \| 'default'` | `'default'` |
+```
+
+## 命名规范
+
+- **组件名**：`X` + PascalCase（如 `XButton`、`XDatePicker`）
+- **CSS 类名**：`x-` + kebab-case（如 `x-button`、`x-date-picker`）
+- **Props**：camelCase（如 `nativeType`、`maxLength`）
+- **CSS 变量**：`--x-` + kebab-case（如 `--x-color-primary`）
+
+## 技术栈
+
+- **框架**：Vue 3 (Composition API)
+- **语言**：TypeScript
+- **构建**：Vite + vite-plugin-dts
+- **样式**：SCSS + CSS Variables
+- **测试**：Vitest
+- **文档**：VitePress

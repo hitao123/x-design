@@ -1,0 +1,41 @@
+// Form mixins
+
+@mixin form-base {
+  font-size: var(--x-font-size-base);
+}
+
+@mixin form-item {
+  display: flex;
+  margin-bottom: var(--x-form-item-margin);
+}
+
+@mixin form-item-label {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding-right: var(--x-spacing-base);
+  color: var(--x-color-text-regular);
+  font-size: var(--x-font-size-base);
+  line-height: 32px;
+  width: var(--x-form-label-width);
+}
+
+@mixin form-item-required {
+  color: var(--x-color-danger);
+  margin-right: 4px;
+}
+
+@mixin form-item-content {
+  flex: 1;
+  position: relative;
+}
+
+@mixin form-item-error {
+  color: var(--x-color-danger);
+  font-size: var(--x-font-size-sm);
+  line-height: 1;
+  padding-top: 4px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@x-design/docs",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "X Design Documentation Site",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "dependencies": {
+    "@x-design/components": "workspace:*",
+    "@x-design/icons": "workspace:*",
+    "@x-design/theme": "workspace:*"
+  },
+  "devDependencies": {
+    "vitepress": "^1.0.0"
+  }
+}

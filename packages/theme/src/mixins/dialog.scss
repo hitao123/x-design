@@ -1,0 +1,84 @@
+// Dialog mixins
+
+@mixin dialog-wrapper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2000;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+@mixin dialog-modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1999;
+  background-color: var(--x-bg-color-overlay);
+}
+
+@mixin dialog-base {
+  position: relative;
+  margin: 0 auto;
+  background-color: var(--x-dialog-bg);
+  border-radius: var(--x-border-radius-base);
+  box-shadow: var(--x-box-shadow-dark);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 30vh);
+}
+
+@mixin dialog-header {
+  padding: var(--x-dialog-header-padding);
+  border-bottom: 1px solid var(--x-border-color-lighter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin dialog-title {
+  font-size: var(--x-font-size-lg);
+  font-weight: 500;
+  color: var(--x-color-text-primary);
+  line-height: 1;
+}
+
+@mixin dialog-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: var(--x-color-text-secondary);
+  line-height: 1;
+  
+  &:hover {
+    color: var(--x-color-primary);
+  }
+}
+
+@mixin dialog-body {
+  padding: var(--x-dialog-body-padding);
+  color: var(--x-color-text-regular);
+  font-size: var(--x-font-size-base);
+  overflow: auto;
+  flex: 1;
+}
+
+@mixin dialog-footer {
+  padding: var(--x-dialog-footer-padding);
+  border-top: 1px solid var(--x-border-color-lighter);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--x-spacing-base);
+}

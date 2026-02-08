@@ -1,0 +1,112 @@
+@use '../../theme/src/mixins/dialog.scss' as *;
+
+.x-dialog__wrapper {
+  @include dialog-wrapper;
+}
+
+.x-dialog__modal {
+  @include dialog-modal;
+}
+
+.x-dialog {
+  @include dialog-base;
+
+  &--center {
+    .x-dialog__header,
+    .x-dialog__body,
+    .x-dialog__footer {
+      text-align: center;
+    }
+  }
+}
+
+.x-dialog__header {
+  @include dialog-header;
+}
+
+.x-dialog__title {
+  @include dialog-title;
+}
+
+.x-dialog__close {
+  @include dialog-close;
+}
+
+.x-dialog__body {
+  @include dialog-body;
+}
+
+.x-dialog__footer {
+  @include dialog-footer;
+}
+
+// Animations
+.x-dialog-fade-enter-active {
+  animation: x-dialog-fade-in var(--x-transition-duration);
+}
+
+.x-dialog-fade-leave-active {
+  animation: x-dialog-fade-out var(--x-transition-duration);
+}
+
+.x-modal-fade-enter-active {
+  animation: x-modal-fade-in var(--x-transition-duration);
+}
+
+.x-modal-fade-leave-active {
+  animation: x-modal-fade-out var(--x-transition-duration);
+}
+
+@keyframes x-dialog-fade-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes x-dialog-fade-out {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7);
+  }
+}
+
+@keyframes x-modal-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes x-modal-fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+// Confirm dialog styles
+.x-dialog-confirm__content {
+  padding: var(--x-dialog-padding-primary);
+  font-size: var(--x-font-size-base);
+  color: var(--x-text-color-regular);
+  line-height: 1.5;
+}
+
+.x-dialog-confirm__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--x-spacing-md);
+}

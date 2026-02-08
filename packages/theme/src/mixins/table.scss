@@ -1,0 +1,84 @@
+// Table mixins
+
+@mixin table-base {
+  width: 100%;
+  font-size: var(--x-font-size-base);
+  color: var(--x-color-text-regular);
+}
+
+@mixin table-container {
+  overflow: auto;
+  position: relative;
+}
+
+@mixin table-element {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--x-bg-color);
+}
+
+@mixin table-header {
+  background-color: var(--x-table-header-bg);
+  color: var(--x-color-text-primary);
+  font-weight: 500;
+  
+  th {
+    border-bottom: 1px solid var(--x-border-color-lighter);
+  }
+}
+
+@mixin table-body {
+  tr:hover {
+    background-color: var(--x-table-hover-bg);
+  }
+}
+
+@mixin table-row {
+  transition: background-color var(--x-transition-duration) var(--x-transition-function);
+  cursor: pointer;
+}
+
+@mixin table-cell {
+  padding: var(--x-table-medium-padding);
+  border-bottom: 1px solid var(--x-border-color-lighter);
+  text-align: left;
+}
+
+@mixin table-size($padding) {
+  .x-table__cell {
+    padding: $padding;
+  }
+}
+
+@mixin table-border {
+  .x-table__element {
+    border: 1px solid var(--x-border-color-base);
+    
+    th,
+    td {
+      border-right: 1px solid var(--x-border-color-lighter);
+      
+      &:last-child {
+        border-right: none;
+      }
+    }
+  }
+}
+
+@mixin table-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 10;
+  
+  span {
+    color: var(--x-color-primary);
+    font-size: var(--x-font-size-base);
+  }
+}

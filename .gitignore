@@ -1,0 +1,27 @@
+# Dependencies
+node_modules
+.pnpm-store
+*.log
+
+# Build outputs
+dist
+*.local
+
+# IDE
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+
+# Test
+coverage
+.nyc_output
+
+# Misc
+.env
+.env.local
+.cache

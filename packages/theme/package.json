@@ -1,0 +1,10 @@
+{
+  "name": "@x-design/theme",
+  "version": "0.0.1",
+  "description": "X Design Theme System",
+  "main": "./index.scss",
+  "files": [
+    "src",
+    "index.scss"
+  ]
+}

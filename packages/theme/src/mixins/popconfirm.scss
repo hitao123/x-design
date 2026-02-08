@@ -1,0 +1,41 @@
+// Popconfirm mixins
+
+@mixin popconfirm-base {
+  display: inline-block;
+}
+
+@mixin popconfirm-popper {
+  position: fixed;
+  z-index: 2001;
+  background-color: var(--x-bg-color);
+  border: 1px solid var(--x-border-color-lighter);
+  border-radius: var(--x-border-radius-base);
+  box-shadow: var(--x-box-shadow-light);
+  padding: var(--x-spacing-base);
+}
+
+@mixin popconfirm-content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--x-spacing-sm);
+  margin-bottom: var(--x-spacing-base);
+}
+
+@mixin popconfirm-icon {
+  font-size: var(--x-font-size-lg);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+@mixin popconfirm-title {
+  color: var(--x-color-text-primary);
+  font-size: var(--x-font-size-base);
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+@mixin popconfirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--x-spacing-sm);
+}

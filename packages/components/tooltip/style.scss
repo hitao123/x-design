@@ -1,0 +1,59 @@
+@use '../../theme/src/mixins/tooltip.scss' as *;
+
+.x-tooltip {
+  @include tooltip-base;
+}
+
+.x-tooltip__trigger {
+  display: inline-block;
+}
+
+.x-tooltip__popper {
+  @include tooltip-popper;
+
+  &--top {
+    transform-origin: center bottom;
+  }
+
+  &--bottom {
+    transform-origin: center top;
+  }
+
+  &--left {
+    transform-origin: right center;
+  }
+
+  &--right {
+    transform-origin: left center;
+  }
+}
+
+.x-tooltip__arrow {
+  @include tooltip-arrow;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: var(--x-tooltip-bg);
+    transform: rotate(45deg);
+  }
+}
+
+.x-tooltip__content {
+  @include tooltip-content;
+}
+
+// Animations
+.x-tooltip-fade-enter-active,
+.x-tooltip-fade-leave-active {
+  transition: opacity var(--x-transition-duration) var(--x-transition-function),
+    transform var(--x-transition-duration) var(--x-transition-function);
+}
+
+.x-tooltip-fade-enter-from,
+.x-tooltip-fade-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
+}

@@ -1,0 +1,98 @@
+// Button mixins
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+  transition: background-color var(--x-transition-duration) var(--x-transition-function),
+    border-color var(--x-transition-duration) var(--x-transition-function),
+    color var(--x-transition-duration) var(--x-transition-function);
+  user-select: none;
+  vertical-align: middle;
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: 500;
+  border: 1px solid transparent;
+  border-radius: var(--x-border-radius-base);
+  
+  &:hover,
+  &:focus {
+    opacity: 0.8;
+  }
+  
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+@mixin button-variant($bg, $border, $color) {
+  background-color: $bg;
+  border-color: $border;
+  color: $color;
+}
+
+@mixin button-size($height, $padding, $font-size) {
+  height: $height;
+  padding: $padding;
+  font-size: $font-size;
+}
+
+@mixin button-plain {
+  background-color: transparent;
+  
+  &.x-button--primary {
+    color: var(--x-color-primary);
+    border-color: var(--x-color-primary);
+    
+    &:hover {
+      background-color: var(--x-color-primary);
+      color: var(--x-color-white);
+    }
+  }
+  
+  &.x-button--success {
+    color: var(--x-color-success);
+    border-color: var(--x-color-success);
+    
+    &:hover {
+      background-color: var(--x-color-success);
+      color: var(--x-color-white);
+    }
+  }
+  
+  &.x-button--warning {
+    color: var(--x-color-warning);
+    border-color: var(--x-color-warning);
+    
+    &:hover {
+      background-color: var(--x-color-warning);
+      color: var(--x-color-white);
+    }
+  }
+  
+  &.x-button--danger {
+    color: var(--x-color-danger);
+    border-color: var(--x-color-danger);
+    
+    &:hover {
+      background-color: var(--x-color-danger);
+      color: var(--x-color-white);
+    }
+  }
+}
+
+@mixin button-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  
+  &:hover,
+  &:focus,
+  &:active {
+    opacity: 0.5;
+  }
+}

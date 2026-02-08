@@ -1,0 +1,82 @@
+@use '../../theme/src/mixins/button.scss' as *;
+
+.x-button {
+  @include button-base;
+
+  &--default {
+    @include button-variant(
+      var(--x-button-default-bg),
+      var(--x-button-default-border),
+      var(--x-button-default-text)
+    );
+  }
+
+  &--primary {
+    @include button-variant(
+      var(--x-color-primary),
+      var(--x-color-primary),
+      var(--x-color-white)
+    );
+  }
+
+  &--success {
+    @include button-variant(
+      var(--x-color-success),
+      var(--x-color-success),
+      var(--x-color-white)
+    );
+  }
+
+  &--warning {
+    @include button-variant(
+      var(--x-color-warning),
+      var(--x-color-warning),
+      var(--x-color-white)
+    );
+  }
+
+  &--danger {
+    @include button-variant(
+      var(--x-color-danger),
+      var(--x-color-danger),
+      var(--x-color-white)
+    );
+  }
+
+  &--info {
+    @include button-variant(
+      var(--x-color-info),
+      var(--x-color-info),
+      var(--x-color-white)
+    );
+  }
+
+  &--small {
+    @include button-size(var(--x-button-small-height), var(--x-button-small-padding), var(--x-font-size-sm));
+  }
+
+  &--medium {
+    @include button-size(var(--x-button-medium-height), var(--x-button-medium-padding), var(--x-font-size-base));
+  }
+
+  &--large {
+    @include button-size(var(--x-button-large-height), var(--x-button-large-padding), var(--x-font-size-lg));
+  }
+
+  &.is-plain {
+    @include button-plain;
+  }
+
+  &.is-round {
+    border-radius: var(--x-border-radius-round);
+  }
+
+  &.is-circle {
+    border-radius: 50%;
+    padding: var(--x-button-circle-padding);
+  }
+
+  &.is-disabled {
+    @include button-disabled;
+  }
+}

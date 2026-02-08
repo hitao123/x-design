@@ -1,0 +1,31 @@
+// Tooltip mixins
+
+@mixin tooltip-base {
+  display: inline-block;
+}
+
+@mixin tooltip-popper {
+  position: fixed;
+  z-index: 2001;
+  background-color: var(--x-tooltip-bg);
+  color: var(--x-tooltip-text);
+  padding: var(--x-tooltip-padding);
+  border-radius: var(--x-border-radius-base);
+  font-size: var(--x-font-size-sm);
+  line-height: 1.4;
+  max-width: 300px;
+  word-wrap: break-word;
+  box-shadow: var(--x-box-shadow-light);
+}
+
+@mixin tooltip-arrow {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
+}
+
+@mixin tooltip-content {
+  position: relative;
+  z-index: 1;
+}

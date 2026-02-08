@@ -1,0 +1,82 @@
+@use '../../theme/src/mixins/form.scss' as *;
+
+.x-form {
+  @include form-base;
+
+  &--label-left {
+    .x-form-item__label {
+      text-align: left;
+    }
+  }
+
+  &--label-right {
+    .x-form-item__label {
+      text-align: right;
+    }
+  }
+
+  &--label-top {
+    .x-form-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .x-form-item__label {
+      width: 100%;
+      text-align: left;
+      margin-bottom: var(--x-spacing-sm);
+    }
+  }
+
+  &--inline {
+    .x-form-item {
+      display: inline-flex;
+      margin-right: var(--x-spacing-lg);
+    }
+  }
+}
+
+.x-form-item {
+  @include form-item;
+
+  &.is-error {
+    .x-form-item__content {
+      :deep(.x-input__inner) {
+        border-color: var(--x-color-danger);
+      }
+    }
+  }
+}
+
+.x-form-item__label {
+  @include form-item-label;
+}
+
+.x-form-item__required {
+  @include form-item-required;
+}
+
+.x-form-item__content {
+  @include form-item-content;
+}
+
+.x-form-item__field {
+  width: 100%;
+}
+
+.x-form-item__error {
+  @include form-item-error;
+}
+
+// Animations
+.x-form-error-fade-enter-active,
+.x-form-error-fade-leave-active {
+  transition: opacity var(--x-transition-duration) var(--x-transition-function),
+    transform var(--x-transition-duration) var(--x-transition-function);
+}
+
+.x-form-error-fade-enter-from,
+.x-form-error-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}

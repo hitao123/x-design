@@ -1,0 +1,50 @@
+// Input mixins
+
+@mixin input-base {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  font-size: var(--x-font-size-base);
+  line-height: 1.5;
+}
+
+@mixin input-inner {
+  width: 100%;
+  background-color: var(--x-input-bg);
+  border: 1px solid var(--x-input-border);
+  border-radius: var(--x-border-radius-base);
+  color: var(--x-input-text);
+  transition: border-color var(--x-transition-duration) var(--x-transition-function);
+  outline: none;
+  
+  &::placeholder {
+    color: var(--x-color-text-placeholder);
+  }
+  
+  &:hover {
+    border-color: var(--x-color-text-secondary);
+  }
+  
+  &:focus {
+    border-color: var(--x-color-primary);
+  }
+}
+
+@mixin input-size($height, $padding, $font-size) {
+  .x-input__inner {
+    height: $height;
+    padding: $padding;
+    font-size: $font-size;
+  }
+}
+
+@mixin input-disabled {
+  cursor: not-allowed;
+  
+  .x-input__inner {
+    background-color: var(--x-bg-color-page);
+    border-color: var(--x-border-color-light);
+    color: var(--x-color-text-placeholder);
+    cursor: not-allowed;
+  }
+}
