@@ -16,9 +16,13 @@
     "dist"
   ],
   "scripts": {
-    "build": "vite build && tsc --declaration --emitDeclarationOnly --outDir dist"
+    "generate": "tsx scripts/generate.ts",
+    "build": "pnpm generate && vite build && tsc --declaration --emitDeclarationOnly --outDir dist"
   },
   "peerDependencies": {
     "vue": "^3.3.0"
+  },
+  "devDependencies": {
+    "svgo": "^4.0.0"
   }
 }

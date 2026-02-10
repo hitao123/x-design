@@ -41,12 +41,12 @@ const styles = computed(() => ({
   width: 1em;
   height: 1em;
   line-height: 0;
-  
+
   svg {
     width: 100%;
     height: 100%;
   }
-  
+
   &--spin {
     animation: x-icon-spin 1s linear infinite;
   }
