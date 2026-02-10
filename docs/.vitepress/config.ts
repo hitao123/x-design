@@ -11,6 +11,7 @@ export default defineConfig({
   description: 'Enterprise-level Vue 3 Component Library for PC',
   lang: 'zh-CN',
   base: '/',
+  cleanUrls: true,
   
   themeConfig: {
     logo: '/logo.svg',
