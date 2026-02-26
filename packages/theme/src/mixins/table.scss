@@ -3,61 +3,80 @@
 @mixin table-base {
   width: 100%;
   font-size: var(--x-font-size-base);
-  color: var(--x-color-text-regular);
+  color: var(--x-text-color-regular, #606266);
+  line-height: 1.5715;
 }
 
 @mixin table-container {
   overflow: auto;
   position: relative;
+  border: 1px solid var(--x-table-border-color, #ebeef5);
+  border-radius: var(--x-border-radius-base, 4px);
 }
 
 @mixin table-element {
   width: 100%;
   border-collapse: collapse;
-  background-color: var(--x-bg-color);
+  background-color: var(--x-bg-color, #fff);
 }
 
 @mixin table-header {
-  background-color: var(--x-table-header-bg);
-  color: var(--x-color-text-primary);
-  font-weight: 500;
-  
+  background-color: var(--x-table-header-bg, #fafafa);
+  color: var(--x-table-header-text-color, #303133);
+  font-weight: 600;
+  font-size: var(--x-font-size-base, 14px);
+
   th {
-    border-bottom: 1px solid var(--x-border-color-lighter);
+    border-bottom: 1px solid var(--x-table-border-color, #ebeef5);
   }
 }
 
 @mixin table-body {
-  tr:hover {
-    background-color: var(--x-table-hover-bg);
+  tr {
+    transition: background-color 0.25s ease;
+
+    &:hover {
+      background-color: var(--x-table-hover-bg, #fafafa);
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
   }
 }
 
 @mixin table-row {
-  transition: background-color var(--x-transition-duration) var(--x-transition-function);
-  cursor: pointer;
+  transition: background-color var(--x-transition-duration, 0.3s) var(--x-transition-function, ease);
 }
 
 @mixin table-cell {
-  padding: var(--x-table-medium-padding);
-  border-bottom: 1px solid var(--x-border-color-lighter);
+  padding: var(--x-table-medium-padding, 12px 16px);
+  border-bottom: 1px solid var(--x-table-border-color, #ebeef5);
   text-align: left;
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
 }
 
 @mixin table-size($padding) {
-  .x-table__cell {
+  .x-table__cell,
+  .x-table__element th,
+  .x-table__element td {
     padding: $padding;
   }
 }
 
 @mixin table-border {
+  .x-table__container {
+    border-radius: var(--x-border-radius-base, 4px);
+  }
+
   .x-table__element {
-    border: 1px solid var(--x-border-color-base);
-    
     th,
     td {
-      border-right: 1px solid var(--x-border-color-lighter);
-      
+      border-right: 1px solid var(--x-table-border-color, #ebeef5);
+
       &:last-child {
         border-right: none;
       }
@@ -76,7 +95,7 @@
   justify-content: center;
   background-color: rgba(255, 255, 255, 0.8);
   z-index: 10;
-  
+
   span {
     color: var(--x-color-primary);
     font-size: var(--x-font-size-base);

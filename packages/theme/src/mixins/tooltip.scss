@@ -5,7 +5,6 @@
 }
 
 @mixin tooltip-popper {
-  position: fixed;
   z-index: 2001;
   background-color: var(--x-tooltip-bg);
   color: var(--x-tooltip-text);

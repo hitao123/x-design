@@ -25,6 +25,7 @@
   "dependencies": {
     "@floating-ui/vue": "^1.0.0",
     "@x-design/theme": "workspace:*",
-    "@x-design/utils": "workspace:*"
+    "@x-design/utils": "workspace:*",
+    "async-validator": "^4.2.5"
   }
 }

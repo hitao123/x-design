@@ -21,6 +21,7 @@
 
 <script setup lang="ts">
 import { computed, inject, onMounted, onBeforeUnmount, ref, watch } from 'vue';
+import Schema from 'async-validator';
 import type { FormItemProps, FormItemRule } from './types';
 
 defineOptions({
@@ -33,7 +34,7 @@ const props = withDefaults(defineProps<FormItemProps>(), {
 
 const formContext = inject<any>('xForm', null);
 
-const validateState = ref<'' | 'success' | 'error'>('');
+const validateState = ref<'' | 'success' | 'error' | 'validating'>('');
 const validateMessage = ref('');
 const initialValue = ref<any>();
 
@@ -42,6 +43,7 @@ const formItemClasses = computed(() => [
   {
     'is-error': validateState.value === 'error',
     'is-required': isRequired.value,
+    'is-validating': validateState.value === 'validating',
   },
 ]);
 
@@ -69,75 +71,86 @@ const fieldValue = computed(() => {
 });
 
 const getRules = (): FormItemRule[] => {
+  // FormItem 自身的 rules 优先
+  if (props.rules) {
+    return Array.isArray(props.rules) ? props.rules : [props.rules];
+  }
   if (!formContext || !props.prop) return [];
-  return formContext.props.rules[props.prop] || [];
+  const formRules = formContext.props.rules[props.prop];
+  if (!formRules) return [];
+  return Array.isArray(formRules) ? formRules : [formRules];
 };
 
+const getFilteredRules = (trigger?: string): FormItemRule[] => {
+  const rules = getRules();
+  if (!trigger) return rules;
+
+  // 获取 Form 级别的默认 trigger
+  const defaultTrigger = formContext?.props.validateTrigger || 'change';
+
+  return rules.filter((rule) => {
+    const ruleTrigger = rule.trigger || defaultTrigger;
+    return ruleTrigger === trigger;
+  });
+};
+
+/**
+ * 使用 async-validator 进行校验
+ */
 const validate = async (trigger?: string): Promise<boolean> => {
   if (!props.prop) return true;
 
-  const rules = getRules().filter((rule) => {
-    if (!trigger) return true;
-    return !rule.trigger || rule.trigger === trigger;
-  });
+  const rules = getFilteredRules(trigger);
 
   if (rules.length === 0) {
     validateState.value = '';
     return true;
   }
 
-  validateState.value = '';
+  validateState.value = 'validating';
   validateMessage.value = '';
 
-  for (const rule of rules) {
-    try {
-      await validateRule(rule, fieldValue.value);
-    } catch (error: any) {
-      validateState.value = 'error';
-      validateMessage.value = error.message;
-      throw error;
-    }
+  // 转换为 async-validator 的描述符格式
+  const descriptor: Record<string, any> = {
+    [props.prop]: rules.map((rule) => {
+      const avRule: any = { ...rule };
+
+      // 如果有自定义 validator 且是 Promise 风格，适配 async-validator 的 asyncValidator
+      if (rule.validator) {
+        const originalValidator = rule.validator;
+        avRule.validator = (r: any, v: any, cb: (error?: Error) => void) => {
+          const result = originalValidator(r, v, cb);
+          // 支持 Promise 返回值
+          if (result && typeof (result as any).then === 'function') {
+            (result as Promise<void>).then(() => cb()).catch((err: any) => {
+              cb(err instanceof Error ? err : new Error(err?.message || String(err)));
+            });
+          }
+        };
+      }
+
+      // 将 RegExp 字符串转为 RegExp 对象
+      if (typeof avRule.pattern === 'string') {
+        avRule.pattern = new RegExp(avRule.pattern);
+      }
+
+      return avRule;
+    }),
+  };
+
+  const validator = new Schema(descriptor);
+
+  try {
+    await validator.validate({ [props.prop]: fieldValue.value });
+    validateState.value = 'success';
+    validateMessage.value = '';
+    return true;
+  } catch (errResult: any) {
+    const { errors } = errResult;
+    validateState.value = 'error';
+    validateMessage.value = errors?.[0]?.message || '校验失败';
+    throw new Error(validateMessage.value);
   }
-
-  validateState.value = 'success';
-  return true;
-};
-
-const validateRule = (rule: FormItemRule, value: any): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    if (rule.required && (value === undefined || value === null || value === '')) {
-      reject(new Error(rule.message || '此项为必填项'));
-      return;
-    }
-
-    if (rule.min !== undefined && String(value).length < rule.min) {
-      reject(new Error(rule.message || `长度不能少于${rule.min}个字符`));
-      return;
-    }
-
-    if (rule.max !== undefined && String(value).length > rule.max) {
-      reject(new Error(rule.message || `长度不能超过${rule.max}个字符`));
-      return;
-    }
-
-    if (rule.pattern && !rule.pattern.test(value)) {
-      reject(new Error(rule.message || '格式不正确'));
-      return;
-    }
-
-    if (rule.validator) {
-      rule.validator(rule, value, (error?: Error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
-      return;
-    }
-
-    resolve();
-  });
 };
 
 const resetField = () => {
@@ -153,18 +166,23 @@ const clearValidate = () => {
   validateMessage.value = '';
 };
 
+// 值变化时触发 change 校验
 watch(
   () => fieldValue.value,
   () => {
-    if (validateState.value === 'error') {
-      validate('change');
+    const rules = getFilteredRules('change');
+    if (rules.length > 0) {
+      validate('change').catch(() => {});
     }
-  }
+  },
 );
 
 onMounted(() => {
   if (props.prop) {
-    initialValue.value = fieldValue.value;
+    // 深拷贝初始值
+    const val = fieldValue.value;
+    initialValue.value = Array.isArray(val) ? [...val] : (typeof val === 'object' && val !== null ? { ...val } : val);
+
     formContext?.addField({
       prop: props.prop,
       validate,
@@ -189,5 +207,7 @@ defineExpose({
   validate,
   resetField,
   clearValidate,
+  validateState,
+  validateMessage,
 });
 </script>

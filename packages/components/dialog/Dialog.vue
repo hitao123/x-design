@@ -39,7 +39,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { computed, watch, onMounted, onBeforeUnmount, toRef } from 'vue';
+import { useLockScroll } from '../_hooks';
 import type { DialogProps } from './types';
 
 defineOptions({
@@ -58,6 +59,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
   center: false,
   destroyOnClose: false,
   appendToBody: true,
+  confirmLoading: false,
 });
 
 const emit = defineEmits<{
@@ -73,6 +75,9 @@ const visible = computed({
   set: (val) => emit('update:modelValue', val),
 });
 
+// 使用 useLockScroll 替代手动管理
+useLockScroll(toRef(() => props.modelValue));
+
 const dialogClasses = computed(() => [
   'x-dialog',
   {
@@ -85,9 +90,17 @@ const dialogStyle = computed(() => ({
   marginTop: props.top,
 }));
 
-const handleClose = () => {
+const doClose = () => {
   emit('close');
   visible.value = false;
+};
+
+const handleClose = () => {
+  if (props.beforeClose) {
+    props.beforeClose(doClose);
+  } else {
+    doClose();
+  }
 };
 
 const handleWrapperClick = () => {
@@ -105,10 +118,8 @@ const handleEscape = (event: KeyboardEvent) => {
 watch(visible, (val) => {
   if (val) {
     emit('open');
-    document.body.style.overflow = 'hidden';
   } else {
     emit('closed');
-    document.body.style.overflow = '';
   }
 });
 
@@ -118,10 +129,9 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleEscape);
-  document.body.style.overflow = '';
 });
 </script>
 
 <style lang="scss">
-@import './style.scss';
+@use './style.scss';
 </style>

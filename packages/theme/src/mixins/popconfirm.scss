@@ -5,7 +5,6 @@
 }
 
 @mixin popconfirm-popper {
-  position: fixed;
   z-index: 2001;
   background-color: var(--x-bg-color);
   border: 1px solid var(--x-border-color-lighter);

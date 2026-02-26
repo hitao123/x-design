@@ -10,6 +10,7 @@ export { XDialog } from './dialog';
 export { XTooltip } from './tooltip';
 export { XPopconfirm } from './popconfirm';
 export { XForm, XFormItem } from './form';
+export { XConfigProvider } from './config-provider';
 
 import { XButton } from './button';
 import { XInput } from './input';
@@ -19,6 +20,7 @@ import { XDialog } from './dialog';
 import { XTooltip } from './tooltip';
 import { XPopconfirm } from './popconfirm';
 import { XForm, XFormItem } from './form';
+import { XConfigProvider } from './config-provider';
 
 const components = [
   XButton,
@@ -30,6 +32,7 @@ const components = [
   XPopconfirm,
   XForm,
   XFormItem,
+  XConfigProvider,
 ];
 
 const install = (app: App) => {
@@ -47,8 +50,12 @@ export default {
 export type { ButtonProps } from './button';
 export type { InputProps } from './input';
 export type { SelectProps, SelectOption } from './select';
-export type { TableProps, TableColumn } from './table';
-export type { DialogProps } from './dialog';
+export type { TableProps, TableColumn, SortState, SortOrder, FilterState, TablePagination } from './table';
+export type { DialogProps, DialogConfirmOptions, DialogMethods, DialogMethodType } from './dialog';
 export type { TooltipProps } from './tooltip';
 export type { PopconfirmProps } from './popconfirm';
-export type { FormProps, FormItemProps, FormItemRule, FormInstance } from './form';
+export type { FormProps, FormItemProps, FormItemRule, FormInstance, FormItemContext } from './form';
+export type { ConfigProviderProps } from './config-provider';
+
+// Dialog 命令式方法导出
+export { confirm, info, success, warning, error } from './dialog';

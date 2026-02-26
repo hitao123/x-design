@@ -1,17 +1,13 @@
-import type { App } from 'vue';
+export {}
 
 declare module 'vue' {
-  export interface ComponentCustomProperties {
-    $dialog: {
-      confirm: (options: import('./dialog/types').DialogConfirmOptions) => Promise<void>;
-    };
+  interface ComponentCustomProperties {
+    $dialog: import('./types').DialogMethods;
   }
 }
 
 declare module '@vue/runtime-core' {
-  export interface ComponentCustomProperties {
-    $dialog: {
-      confirm: (options: import('./dialog/types').DialogConfirmOptions) => Promise<void>;
-    };
+  interface ComponentCustomProperties {
+    $dialog: import('./types').DialogMethods;
   }
 }

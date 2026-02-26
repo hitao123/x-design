@@ -3,16 +3,12 @@
     <div class="x-select__input-wrapper">
       <!-- 多选标签 -->
       <div v-if="multiple && selectedOptions.length > 0" class="x-select__tags">
-        <span
-          v-for="option in selectedOptions"
-          :key="option.value"
-          class="x-select__tag"
-        >
+        <span v-for="option in selectedOptions" :key="option.value" class="x-select__tag">
           {{ option.label }}
           <i class="x-select__tag-close" @click.stop="removeTag(option)">×</i>
         </span>
       </div>
-      
+
       <!-- 输入框 -->
       <input
         ref="inputRef"
@@ -26,7 +22,7 @@
         @blur="handleBlur"
         @keydown="handleKeydown"
       />
-      
+
       <!-- 图标 -->
       <span class="x-select__suffix">
         <i
@@ -36,13 +32,7 @@
         >
           ×
         </i>
-        <i
-          v-else
-          class="x-select__arrow"
-          :class="{ 'is-reverse': visible }"
-        >
-          ▼
-        </i>
+        <i v-else class="x-select__arrow" :class="{ 'is-reverse': dropdownVisible }"> ▼ </i>
       </span>
     </div>
   </div>
@@ -51,7 +41,7 @@
   <Teleport to="body">
     <Transition name="x-select-dropdown">
       <div
-        v-show="visible"
+        v-show="dropdownVisible"
         ref="floatingRef"
         :class="['x-select__dropdown', popperClass]"
         :style="floatingStyles"
@@ -60,7 +50,7 @@
           {{ loadingText || '加载中...' }}
         </div>
         <div v-else-if="filteredOptions.length === 0" class="x-select__empty">
-          {{ query ? (noMatchText || '无匹配数据') : (noDataText || '无数据') }}
+          {{ query ? noMatchText || '无匹配数据' : noDataText || '无数据' }}
         </div>
         <ul v-else class="x-select__options">
           <li
@@ -79,8 +69,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
-import { useFloating, offset, flip, shift, size } from '@floating-ui/vue';
+import { ref, computed, watch, nextTick } from 'vue';
+import { usePopper } from '../_internal/popper';
+import { useClickOutside } from '../_hooks';
 import type { SelectProps, SelectOption } from './types';
 
 defineOptions({
@@ -112,39 +103,39 @@ const emit = defineEmits<{
 
 const referenceRef = ref<HTMLElement>();
 const floatingRef = ref<HTMLElement>();
+const arrowRef = ref<HTMLElement>();
 const inputRef = ref<HTMLInputElement>();
-const visible = ref(false);
 const query = ref('');
-const selectedValue = ref<string | number | (string | number)[]>(props.modelValue || (props.multiple ? [] : ''));
+const selectedValue = ref<string | number | (string | number)[]>(
+  props.modelValue || (props.multiple ? [] : '')
+);
 
-// Floating UI
-const { floatingStyles, middlewareData } = useFloating(referenceRef, floatingRef, {
-  placement: 'bottom-start',
-  middleware: [
-    offset(8),
-    flip(),
-    shift({ padding: 5 }),
-    size({
-      apply({ rects, elements }) {
-        Object.assign(elements.floating.style, {
-          minWidth: `${rects.reference.width}px`,
-        });
-      },
-    }),
-  ],
+// 使用 usePopper 替代直接调用 @floating-ui/vue
+const {
+  visible: dropdownVisible,
+  floatingStyles,
+  show,
+  hide,
+} = usePopper(referenceRef, floatingRef, arrowRef, {
+  placement: 'bottom-start' as any,
+  offset: 8,
+  matchWidth: true,
 });
 
 // 监听 modelValue 变化
-watch(() => props.modelValue, (val) => {
-  selectedValue.value = val || (props.multiple ? [] : '');
-});
+watch(
+  () => props.modelValue,
+  (val) => {
+    selectedValue.value = val || (props.multiple ? [] : '');
+  }
+);
 
 const wrapperClasses = computed(() => [
   'x-select',
   `x-select--${props.size}`,
   {
     'is-disabled': props.disabled,
-    'is-focus': visible.value,
+    'is-focus': dropdownVisible.value,
     'is-multiple': props.multiple,
   },
 ]);
@@ -159,12 +150,12 @@ const inputClasses = computed(() => [
 // 已选中的选项
 const selectedOptions = computed(() => {
   if (!props.multiple) {
-    const option = props.options.find(opt => opt.value === selectedValue.value);
+    const option = props.options.find((opt) => opt.value === selectedValue.value);
     return option ? [option] : [];
   }
-  
+
   const values = selectedValue.value as (string | number)[];
-  return props.options.filter(opt => values.includes(opt.value));
+  return props.options.filter((opt) => values.includes(opt.value));
 });
 
 // 是否有值
@@ -172,20 +163,22 @@ const hasValue = computed(() => {
   if (props.multiple) {
     return (selectedValue.value as any[]).length > 0;
   }
-  return selectedValue.value !== '' && selectedValue.value !== null && selectedValue.value !== undefined;
+  return (
+    selectedValue.value !== '' && selectedValue.value !== null && selectedValue.value !== undefined
+  );
 });
 
 // 显示值
 const displayValue = computed({
   get() {
-    if (visible.value && props.filterable) {
+    if (dropdownVisible.value && props.filterable) {
       return query.value;
     }
-    
+
     if (props.multiple) {
       return '';
     }
-    
+
     const option = selectedOptions.value[0];
     return option ? option.label : '';
   },
@@ -207,33 +200,35 @@ const filteredOptions = computed(() => {
   if (!props.filterable || !query.value) {
     return props.options;
   }
-  
+
   const lowerQuery = query.value.toLowerCase();
-  return props.options.filter(option => 
-    option.label.toLowerCase().includes(lowerQuery)
-  );
+  return props.options.filter((option) => option.label.toLowerCase().includes(lowerQuery));
 });
 
 // 切换下拉框
 const toggleDropdown = () => {
   if (props.disabled) return;
-  visible.value = !visible.value;
+  if (dropdownVisible.value) {
+    closeDropdown();
+  } else {
+    show();
+  }
 };
 
 // 关闭下拉框
 const closeDropdown = () => {
-  visible.value = false;
+  hide();
   query.value = '';
 };
 
 // 选择选项
 const handleSelect = (option: SelectOption) => {
   if (option.disabled) return;
-  
+
   if (props.multiple) {
     const values = [...(selectedValue.value as (string | number)[])];
     const index = values.indexOf(option.value);
-    
+
     if (index > -1) {
       values.splice(index, 1);
     } else {
@@ -242,12 +237,11 @@ const handleSelect = (option: SelectOption) => {
       }
       values.push(option.value);
     }
-    
+
     selectedValue.value = values;
     emit('update:modelValue', values);
     emit('change', values);
-    
-    // 多选不关闭下拉框
+
     nextTick(() => {
       inputRef.value?.focus();
     });
@@ -262,10 +256,10 @@ const handleSelect = (option: SelectOption) => {
 // 移除标签
 const removeTag = (option: SelectOption) => {
   if (props.disabled) return;
-  
+
   const values = [...(selectedValue.value as (string | number)[])];
   const index = values.indexOf(option.value);
-  
+
   if (index > -1) {
     values.splice(index, 1);
     selectedValue.value = values;
@@ -289,7 +283,7 @@ const handleClear = () => {
 const handleInput = (event: Event) => {
   if (!props.filterable) return;
   query.value = (event.target as HTMLInputElement).value;
-  visible.value = true;
+  show();
 };
 
 // 获取选项类名
@@ -313,8 +307,8 @@ const isSelected = (option: SelectOption) => {
 const handleKeydown = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
     closeDropdown();
-  } else if (event.key === 'Enter' && !visible.value) {
-    visible.value = true;
+  } else if (event.key === 'Enter' && !dropdownVisible.value) {
+    show();
   }
 };
 
@@ -327,9 +321,9 @@ const handleBlur = (event: FocusEvent) => {
 };
 
 // 监听 visible 变化
-watch(visible, (val) => {
+watch(dropdownVisible, (val) => {
   emit('visibleChange', val);
-  
+
   if (val) {
     nextTick(() => {
       inputRef.value?.focus();
@@ -340,32 +334,17 @@ watch(visible, (val) => {
 });
 
 // 点击外部关闭
-const handleClickOutside = (event: MouseEvent) => {
-  const target = event.target as Node;
-  if (
-    visible.value &&
-    referenceRef.value &&
-    floatingRef.value &&
-    !referenceRef.value.contains(target) &&
-    !floatingRef.value.contains(target)
-  ) {
+useClickOutside([referenceRef, floatingRef], () => {
+  if (dropdownVisible.value) {
     closeDropdown();
   }
-};
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside);
 });
 
 // 暴露方法
 defineExpose({
   focus: () => {
     inputRef.value?.focus();
-    visible.value = true;
+    show();
   },
   blur: () => {
     inputRef.value?.blur();
@@ -375,5 +354,5 @@ defineExpose({
 </script>
 
 <style lang="scss">
-@import './style.scss';
+@use './style.scss';
 </style>

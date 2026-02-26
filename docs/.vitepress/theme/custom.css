@@ -21,6 +21,23 @@
   margin: 24px 0;
 }
 
+/* 覆盖 VitePress 对组件内 table 的默认样式 */
+.vp-doc .x-table table {
+  margin: 0;
+  display: table;
+}
+
+.vp-doc .x-table th,
+.vp-doc .x-table td {
+  border: none;
+  padding: 0;
+}
+
+.vp-doc .x-table tr {
+  border-top: none;
+  background-color: transparent;
+}
+
 .demo-actions {
   margin-top: 16px;
   padding-top: 16px;

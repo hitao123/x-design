@@ -1,3 +1,5 @@
+import type { VNode } from 'vue';
+
 export type SortOrder = 'ascending' | 'descending' | null;
 
 export interface TableColumn {
@@ -14,6 +16,16 @@ export interface TableColumn {
     default?: string;
     header?: string;
   };
+  /** render 函数，用于编程式自定义列渲染 */
+  render?: (params: { row: any; column: TableColumn; $index: number }) => VNode | string;
+  /** 筛选配置：可选值列表 */
+  filters?: Array<{ text: string; value: any }>;
+  /** 筛选函数 */
+  onFilter?: (value: any, row: any) => boolean;
+  /** 是否多选筛选 */
+  filterMultiple?: boolean;
+  /** 受控筛选值 */
+  filteredValue?: any[];
 }
 
 export interface TableProps {
@@ -41,9 +53,26 @@ export interface TableProps {
     children?: string;
     hasChildren?: string;
   };
+  /** 分页配置，传入即启用内置分页 */
+  pagination?: TablePagination | false;
+  /** 空数据提示文案 */
+  emptyText?: string;
+  /** 表格布局方式，auto 根据内容自适应列宽，fixed 均分剩余宽度 */
+  tableLayout?: 'auto' | 'fixed';
+}
+
+export interface TablePagination {
+  current?: number;
+  pageSize?: number;
+  total?: number;
+  pageSizes?: number[];
 }
 
 export interface SortState {
   prop: string;
   order: SortOrder;
+}
+
+export interface FilterState {
+  [prop: string]: any[];
 }

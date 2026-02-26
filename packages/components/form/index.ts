@@ -7,4 +7,4 @@ export const XFormItem = withInstall(FormItem);
 
 export default XForm;
 
-export type { FormProps, FormItemProps, FormItemRule, FormInstance } from './types';
+export type { FormProps, FormItemProps, FormItemRule, FormInstance, FormItemContext } from './types';

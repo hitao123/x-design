@@ -6,15 +6,16 @@
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
       @click="handleClick"
-      @focus="handleFocus"
-      @blur="handleBlur"
+      @focusin="handleFocus"
+      @focusout="handleBlur"
     >
       <slot />
     </div>
     <Teleport to="body">
       <Transition name="x-tooltip-fade">
         <div
-          v-if="visible"
+          v-if="shouldRender"
+          v-show="popperVisible"
           ref="floatingRef"
           :class="popperClasses"
           :style="floatingStyles"
@@ -25,7 +26,7 @@
             v-if="showArrow"
             ref="arrowRef"
             class="x-tooltip__arrow"
-            :style="arrowStyles"
+            :style="computedArrowStyles"
           />
           <div class="x-tooltip__content">
             <slot name="content">{{ content }}</slot>
@@ -37,8 +38,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
-import { useFloating, offset, flip, shift, arrow } from '@floating-ui/vue';
+import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue';
+import { usePopper } from '../_internal/popper/usePopper';
+import { useClickOutside } from '../_hooks';
 import type { TooltipProps } from './types';
 
 defineOptions({
@@ -53,58 +55,63 @@ const props = withDefaults(defineProps<TooltipProps>(), {
   offset: 8,
   showArrow: true,
   enterable: true,
+  openDelay: 0,
+  closeDelay: 200,
+  destroyTooltipOnHide: false,
 });
 
-const visible = ref(false);
+const emit = defineEmits<{
+  'update:open': [value: boolean];
+  openChange: [value: boolean];
+}>();
+
 const tooltipRef = ref<HTMLElement>();
 const referenceRef = ref<HTMLElement>();
 const floatingRef = ref<HTMLElement>();
 const arrowRef = ref<HTMLElement>();
 
-// Use Floating UI
-const { floatingStyles, middlewareData, placement: actualPlacement } = useFloating(
-  referenceRef,
-  floatingRef,
-  {
-    placement: props.placement,
-    middleware: [
-      offset(props.offset),
-      flip(),
-      shift({ padding: 5 }),
-      arrow({ element: arrowRef }),
-    ],
-    whileElementsMounted: (reference, floating, update) => {
-      if (visible.value) {
-        update();
-      }
-    },
+const {
+  visible: popperVisible,
+  floatingStyles,
+  arrowStyles: computedArrowStyles,
+  actualPlacement,
+  show,
+  hide,
+  toggle,
+  clearTimers,
+  update,
+} = usePopper(referenceRef, floatingRef, arrowRef, {
+  placement: computed(() => props.placement),
+  offset: computed(() => props.offset),
+  showArrow: computed(() => props.showArrow),
+  openDelay: computed(() => props.openDelay),
+  closeDelay: computed(() => props.closeDelay),
+  disabled: computed(() => props.disabled),
+  open: computed(() => props.open),
+});
+
+const rendered = ref(false);
+const shouldRender = computed(() => {
+  if (props.destroyTooltipOnHide) return popperVisible.value;
+  return rendered.value;
+});
+
+watch(popperVisible, (val) => {
+  if (val) {
+    rendered.value = true;
+    nextTick(() => {
+      update();
+    });
   }
-);
+  emit('update:open', val);
+  emit('openChange', val);
+});
 
 const popperClasses = computed(() => [
   'x-tooltip__popper',
-  `x-tooltip__popper--${actualPlacement.value}`,
+  `x-tooltip__popper--${actualPlacement.value.split('-')[0]}`,
+  props.popperClass,
 ]);
-
-// Arrow positioning based on Floating UI
-const arrowStyles = computed(() => {
-  const arrowData = middlewareData.value.arrow;
-  if (!arrowData) return {};
-
-  const { x, y } = arrowData;
-  const staticSide = {
-    top: 'bottom',
-    right: 'left',
-    bottom: 'top',
-    left: 'right',
-  }[actualPlacement.value.split('-')[0]];
-
-  return {
-    left: x != null ? `${x}px` : '',
-    top: y != null ? `${y}px` : '',
-    [staticSide as string]: '-4px',
-  };
-});
 
 const handleMouseEnter = () => {
   if (props.trigger === 'hover' && !props.disabled) {
@@ -120,7 +127,7 @@ const handleMouseLeave = () => {
 
 const handleClick = () => {
   if (props.trigger === 'click' && !props.disabled) {
-    visible.value = !visible.value;
+    toggle();
   }
 };
 
@@ -138,7 +145,7 @@ const handleBlur = () => {
 
 const handlePopperMouseEnter = () => {
   if (props.trigger === 'hover' && props.enterable) {
-    visible.value = true;
+    clearTimers();
   }
 };
 
@@ -148,38 +155,22 @@ const handlePopperMouseLeave = () => {
   }
 };
 
-const show = () => {
-  if (!props.disabled) {
-    visible.value = true;
-  }
-};
-
-const hide = () => {
-  visible.value = false;
-};
-
-const handleClickOutside = (event: MouseEvent) => {
-  if (
-    visible.value &&
-    props.trigger === 'click' &&
-    tooltipRef.value &&
-    !tooltipRef.value.contains(event.target as Node) &&
-    floatingRef.value &&
-    !floatingRef.value.contains(event.target as Node)
-  ) {
+useClickOutside([tooltipRef, floatingRef], () => {
+  if (popperVisible.value && props.trigger === 'click') {
     hide();
   }
-};
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside);
+  clearTimers();
+});
+
+defineExpose({
+  show,
+  hide,
 });
 </script>
 
 <style lang="scss">
-@import './style.scss';
+@use './style.scss';
 </style>

@@ -1,19 +1,16 @@
 <template>
   <div ref="popconfirmRef" class="x-popconfirm">
-    <div
-      ref="referenceRef"
-      class="x-popconfirm__trigger"
-      @click="handleTriggerClick"
-    >
+    <div ref="referenceRef" class="x-popconfirm__trigger" @click="handleTriggerClick">
       <slot />
     </div>
     <Teleport to="body">
       <Transition name="x-popconfirm-fade">
         <div
-          v-if="visible"
+          v-if="shouldRender"
+          v-show="visible"
           ref="floatingRef"
           :class="popperClasses"
-          :style="floatingStyles"
+          :style="popperStyles"
         >
           <div class="x-popconfirm__content">
             <div v-if="!hideIcon" class="x-popconfirm__icon" :style="{ color: iconColor }">
@@ -40,8 +37,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useFloating, offset, flip, shift } from '@floating-ui/vue';
+import { ref, computed, toRef, watch } from 'vue';
+import { usePopper } from '../_internal/popper';
+import { useClickOutside } from '../_hooks';
 import { XButton } from '../button';
 import type { PopconfirmProps } from './types';
 
@@ -66,72 +64,64 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
-const visible = ref(false);
 const popconfirmRef = ref<HTMLElement>();
 const referenceRef = ref<HTMLElement>();
 const floatingRef = ref<HTMLElement>();
+const arrowRef = ref<HTMLElement>();
 
-// Use Floating UI
-const { floatingStyles: baseFloatingStyles, placement: actualPlacement } = useFloating(
+const { visible, floatingStyles, actualPlacement, toggle, hide } = usePopper(
   referenceRef,
   floatingRef,
+  arrowRef,
   {
-    placement: props.placement,
-    middleware: [offset(8), flip(), shift({ padding: 5 })],
-    whileElementsMounted: (reference, floating, update) => {
-      if (visible.value) {
-        update();
-      }
-    },
+    placement: toRef(props, 'placement'),
+    offset: 8,
   }
 );
 
-// Add width to floating styles
-const floatingStyles = computed(() => ({
-  ...baseFloatingStyles.value,
+const rendered = ref(false);
+const shouldRender = computed(() => rendered.value || visible.value);
+
+watch(
+  visible,
+  (val) => {
+    if (val) rendered.value = true;
+  },
+  { immediate: true }
+);
+
+const popperStyles = computed(() => ({
+  ...floatingStyles.value,
   width: typeof props.width === 'number' ? `${props.width}px` : props.width,
 }));
 
 const popperClasses = computed(() => [
   'x-popconfirm__popper',
-  `x-popconfirm__popper--${actualPlacement.value}`,
+  `x-popconfirm__popper--${actualPlacement.value.split('-')[0]}`,
 ]);
 
 const handleTriggerClick = () => {
-  visible.value = !visible.value;
+  toggle();
 };
 
 const handleConfirm = () => {
   emit('confirm');
-  visible.value = false;
+  hide();
 };
 
 const handleCancel = () => {
   emit('cancel');
-  visible.value = false;
+  hide();
 };
 
-const handleClickOutside = (event: MouseEvent) => {
-  if (
-    visible.value &&
-    popconfirmRef.value &&
-    !popconfirmRef.value.contains(event.target as Node) &&
-    floatingRef.value &&
-    !floatingRef.value.contains(event.target as Node)
-  ) {
-    visible.value = false;
+// 点击外部关闭
+useClickOutside([popconfirmRef, floatingRef], () => {
+  if (visible.value) {
+    hide();
   }
-};
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside);
 });
 </script>
 
 <style lang="scss">
-@import './style.scss';
+@use './style.scss';
 </style>

@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { computed, provide, reactive } from 'vue';
-import type { FormProps, FormItemRule } from './types';
+import type { FormProps, FormItemContext } from './types';
 
 defineOptions({
   name: 'XForm',
@@ -18,6 +18,7 @@ const props = withDefaults(defineProps<FormProps>(), {
   labelPosition: 'right',
   inline: false,
   disabled: false,
+  validateTrigger: 'change',
 });
 
 const formClasses = computed(() => [
@@ -28,17 +29,23 @@ const formClasses = computed(() => [
   },
 ]);
 
-const fields = reactive<any[]>([]);
+const fields = reactive<FormItemContext[]>([]);
 
-const addField = (field: any) => {
+const addField = (field: FormItemContext) => {
   fields.push(field);
 };
 
-const removeField = (field: any) => {
+const removeField = (field: FormItemContext) => {
   const index = fields.indexOf(field);
   if (index > -1) {
     fields.splice(index, 1);
   }
+};
+
+const getFilteredFields = (props?: string | string[]): FormItemContext[] => {
+  if (!props) return fields;
+  const propsArray = Array.isArray(props) ? props : [props];
+  return fields.filter((f) => propsArray.includes(f.prop));
 };
 
 const validate = async (callback?: (valid: boolean, fields?: Record<string, any>) => void): Promise<boolean> => {
@@ -48,42 +55,35 @@ const validate = async (callback?: (valid: boolean, fields?: Record<string, any>
     callback?.(true);
     return true;
   } catch (errors) {
-    callback?.(false, errors);
+    callback?.(false, errors as any);
     return false;
   }
 };
 
-const validateField = async (prop: string, callback?: (valid: boolean) => void): Promise<boolean> => {
-  const field = fields.find((f) => f.prop === prop);
-  if (!field) {
+const validateField = async (prop: string | string[], callback?: (valid: boolean) => void): Promise<boolean> => {
+  const targetFields = getFilteredFields(prop);
+  if (targetFields.length === 0) {
     callback?.(true);
     return true;
   }
   try {
-    await field.validate();
+    await Promise.all(targetFields.map((f) => f.validate()));
     callback?.(true);
     return true;
-  } catch (error) {
+  } catch {
     callback?.(false);
     return false;
   }
 };
 
-const resetFields = () => {
-  fields.forEach((field) => field.resetField());
+const resetFields = (props?: string | string[]) => {
+  const targetFields = getFilteredFields(props);
+  targetFields.forEach((field) => field.resetField());
 };
 
 const clearValidate = (props?: string | string[]) => {
-  if (!props) {
-    fields.forEach((field) => field.clearValidate());
-  } else {
-    const propsArray = Array.isArray(props) ? props : [props];
-    fields.forEach((field) => {
-      if (propsArray.includes(field.prop)) {
-        field.clearValidate();
-      }
-    });
-  }
+  const targetFields = getFilteredFields(props);
+  targetFields.forEach((field) => field.clearValidate());
 };
 
 provide('xForm', {
@@ -101,5 +101,5 @@ defineExpose({
 </script>
 
 <style lang="scss">
-@import './style.scss';
+@use './style.scss';
 </style>

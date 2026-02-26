@@ -83,13 +83,15 @@
   --x-input-large-padding: 0 19px;
   
   // Table 特定变量
-  --x-table-header-bg: var(--x-bg-color-page);
-  --x-table-hover-bg: var(--x-border-color-extra-light);
-  --x-table-stripe-bg: var(--x-bg-color-page);
+  --x-table-header-bg: #fafafa;
+  --x-table-header-text-color: var(--x-color-text-primary);
+  --x-table-hover-bg: #fafafa;
+  --x-table-stripe-bg: #fafafa;
   --x-table-current-row-bg: #ecf5ff;
-  --x-table-small-padding: 8px 12px;
+  --x-table-border-color: var(--x-border-color-lighter);
+  --x-table-small-padding: 8px 8px;
   --x-table-medium-padding: 12px 16px;
-  --x-table-large-padding: 16px 20px;
+  --x-table-large-padding: 16px 16px;
   
   // Dialog 特定变量
   --x-dialog-bg: var(--x-color-white);

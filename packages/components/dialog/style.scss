@@ -103,6 +103,28 @@
   font-size: var(--x-font-size-base);
   color: var(--x-text-color-regular);
   line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--x-spacing-sm);
+}
+
+.x-dialog-confirm__icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  line-height: 1.4;
+
+  &--info {
+    color: var(--x-color-info);
+  }
+  &--success {
+    color: var(--x-color-success);
+  }
+  &--warning {
+    color: var(--x-color-warning);
+  }
+  &--error {
+    color: var(--x-color-danger);
+  }
 }
 
 .x-dialog-confirm__footer {

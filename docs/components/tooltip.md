@@ -7,13 +7,22 @@
 悬停时显示提示信息。
 
 <script setup>
+import { ref } from 'vue';
 import { XTooltip, XButton } from '@x-design/components';
+const tooltipRef = ref(null);
 </script>
 
 <div class="demo-block">
   <XTooltip content="这是一段提示文字">
     <XButton>Hover me</XButton>
   </XTooltip>
+  <span style="margin-left: 16px;" />
+  <XTooltip ref="tooltipRef" content="手动触发测试">
+    <XButton>Manual Test</XButton>
+  </XTooltip>
+  <span style="margin-left: 16px;" />
+  <XButton @click="tooltipRef?.show?.()">Show</XButton>
+  <XButton @click="tooltipRef?.hide?.()">Hide</XButton>
 </div>
 
 ```vue
