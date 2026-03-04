@@ -16,13 +16,6 @@ const tooltipRef = ref(null);
   <XTooltip content="这是一段提示文字">
     <XButton>Hover me</XButton>
   </XTooltip>
-  <span style="margin-left: 16px;" />
-  <XTooltip ref="tooltipRef" content="手动触发测试">
-    <XButton>Manual Test</XButton>
-  </XTooltip>
-  <span style="margin-left: 16px;" />
-  <XButton @click="tooltipRef?.show?.()">Show</XButton>
-  <XButton @click="tooltipRef?.hide?.()">Hide</XButton>
 </div>
 
 ```vue
@@ -145,24 +138,38 @@ import { XTooltip, XButton } from '@x-design/components';
 
 ### Props
 
-| 参数 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| content | 显示的内容 | `string` | `''` |
-| placement | 出现位置 | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` |
-| trigger | 触发方式 | `'hover' \| 'click' \| 'focus'` | `'hover'` |
-| disabled | 是否禁用 | `boolean` | `false` |
-| show-arrow | 是否显示箭头 | `boolean` | `true` |
+| 参数                    | 说明                                            | 类型                                                                                                                                                                 | 默认值    |
+| ----------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| content                 | 显示的内容                                      | `string`                                                                                                                                                             | `''`      |
+| placement               | 出现位置                                        | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'`   |
+| trigger                 | 触发方式                                        | `'hover' \| 'click' \| 'focus'`                                                                                                                                      | `'hover'` |
+| disabled                | 是否禁用                                        | `boolean`                                                                                                                                                            | `false`   |
+| offset                  | 浮层与触发元素的偏移量（px）                    | `number`                                                                                                                                                             | `8`       |
+| show-arrow              | 是否显示箭头                                    | `boolean`                                                                                                                                                            | `true`    |
+| enterable               | 鼠标是否可进入弹出层（hover 模式下有效）        | `boolean`                                                                                                                                                            | `true`    |
+| open                    | 受控模式：外部控制可见状态（支持 v-model:open） | `boolean`                                                                                                                                                            | —         |
+| open-delay              | 显示延迟（ms）                                  | `number`                                                                                                                                                             | `0`       |
+| close-delay             | 隐藏延迟（ms）                                  | `number`                                                                                                                                                             | `200`     |
+| destroy-tooltip-on-hide | 隐藏时是否销毁浮层 DOM                          | `boolean`                                                                                                                                                            | `false`   |
+| popper-class            | 弹出层自定义类名                                | `string`                                                                                                                                                             | —         |
+
+### Events
+
+| 事件名      | 说明                                         | 回调参数           |
+| ----------- | -------------------------------------------- | ------------------ |
+| update:open | 可见状态变更时触发（配合 v-model:open 使用） | `(value: boolean)` |
+| openChange  | 可见状态变更时触发                           | `(value: boolean)` |
 
 ### Slots
 
-| 插槽名 | 说明 |
-| --- | --- |
-| default | Tooltip 的触发元素 |
+| 插槽名  | 说明                |
+| ------- | ------------------- |
+| default | Tooltip 的触发元素  |
 | content | 自定义 Tooltip 内容 |
 
 ### Exposes
 
-| 方法名 | 说明 | 类型 |
-| --- | --- | --- |
-| show | 显示 Tooltip | `() => void` |
-| hide | 隐藏 Tooltip | `() => void` |
+| 方法名 | 说明         | 类型         |
+| ------ | ------------ | ------------ |
+| show   | 显示 Tooltip | `() => void` |
+| hide   | 隐藏 Tooltip | `() => void` |

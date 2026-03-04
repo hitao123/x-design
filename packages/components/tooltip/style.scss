@@ -10,35 +10,35 @@
 
 .x-tooltip__popper {
   @include tooltip-popper;
-
-  &--top {
-    transform-origin: center bottom;
-  }
-
-  &--bottom {
-    transform-origin: center top;
-  }
-
-  &--left {
-    transform-origin: right center;
-  }
-
-  &--right {
-    transform-origin: left center;
-  }
 }
 
 .x-tooltip__arrow {
   @include tooltip-arrow;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    background-color: var(--x-tooltip-bg);
-    transform: rotate(45deg);
-  }
+}
+
+// 各方向箭头：隐藏朝内侧的 border，露出朝外的三角
+.x-tooltip__popper--top .x-tooltip__arrow::before {
+  border-bottom-color: transparent !important;
+  border-right-color: transparent !important;
+  border-top-left-radius: 2px;
+}
+
+.x-tooltip__popper--bottom .x-tooltip__arrow::before {
+  border-top-color: transparent !important;
+  border-left-color: transparent !important;
+  border-bottom-right-radius: 2px;
+}
+
+.x-tooltip__popper--left .x-tooltip__arrow::before {
+  border-top-color: transparent !important;
+  border-right-color: transparent !important;
+  border-bottom-left-radius: 2px;
+}
+
+.x-tooltip__popper--right .x-tooltip__arrow::before {
+  border-bottom-color: transparent !important;
+  border-left-color: transparent !important;
+  border-top-right-radius: 2px;
 }
 
 .x-tooltip__content {
@@ -48,12 +48,10 @@
 // Animations
 .x-tooltip-fade-enter-active,
 .x-tooltip-fade-leave-active {
-  transition: opacity var(--x-transition-duration) var(--x-transition-function),
-    transform var(--x-transition-duration) var(--x-transition-function);
+  transition: opacity var(--x-transition-duration) var(--x-transition-function);
 }
 
 .x-tooltip-fade-enter-from,
 .x-tooltip-fade-leave-to {
   opacity: 0;
-  transform: scale(0.8);
 }

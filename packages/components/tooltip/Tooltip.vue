@@ -11,10 +11,10 @@
     >
       <slot />
     </div>
-    <Teleport to="body">
+    <Teleport to="body" :disabled="!isMounted">
       <Transition name="x-tooltip-fade">
         <div
-          v-if="shouldRender"
+          v-if="destroyTooltipOnHide ? popperVisible : true"
           v-show="popperVisible"
           ref="floatingRef"
           :class="popperClasses"
@@ -38,8 +38,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue';
-import { usePopper } from '../_internal/popper/usePopper';
+import { ref, computed, toRef, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
+import { usePopper } from '../_internal/popper';
 import { useClickOutside } from '../_hooks';
 import type { TooltipProps } from './types';
 
@@ -55,6 +55,7 @@ const props = withDefaults(defineProps<TooltipProps>(), {
   offset: 8,
   showArrow: true,
   enterable: true,
+  open: undefined,
   openDelay: 0,
   closeDelay: 200,
   destroyTooltipOnHide: false,
@@ -69,6 +70,16 @@ const tooltipRef = ref<HTMLElement>();
 const referenceRef = ref<HTMLElement>();
 const floatingRef = ref<HTMLElement>();
 const arrowRef = ref<HTMLElement>();
+const isMounted = ref(false);
+
+onMounted(() => {
+  isMounted.value = true;
+});
+
+const handleVisibleChange = (val: boolean) => {
+  emit('update:open', val);
+  emit('openChange', val);
+};
 
 const {
   visible: popperVisible,
@@ -81,30 +92,21 @@ const {
   clearTimers,
   update,
 } = usePopper(referenceRef, floatingRef, arrowRef, {
-  placement: computed(() => props.placement),
-  offset: computed(() => props.offset),
-  showArrow: computed(() => props.showArrow),
-  openDelay: computed(() => props.openDelay),
-  closeDelay: computed(() => props.closeDelay),
-  disabled: computed(() => props.disabled),
-  open: computed(() => props.open),
+  placement: toRef(props, 'placement'),
+  offset: toRef(props, 'offset'),
+  showArrow: toRef(props, 'showArrow'),
+  openDelay: toRef(props, 'openDelay'),
+  closeDelay: toRef(props, 'closeDelay'),
+  disabled: toRef(props, 'disabled'),
+  open: toRef(props, 'open'),
+  onVisibleChange: handleVisibleChange,
 });
 
-const rendered = ref(false);
-const shouldRender = computed(() => {
-  if (props.destroyTooltipOnHide) return popperVisible.value;
-  return rendered.value;
-});
-
+// destroyTooltipOnHide 模式下，v-if 新创建 DOM 时需手动触发位置计算
 watch(popperVisible, (val) => {
-  if (val) {
-    rendered.value = true;
-    nextTick(() => {
-      update();
-    });
+  if (val && props.destroyTooltipOnHide) {
+    nextTick(() => update());
   }
-  emit('update:open', val);
-  emit('openChange', val);
 });
 
 const popperClasses = computed(() => [
@@ -113,52 +115,40 @@ const popperClasses = computed(() => [
   props.popperClass,
 ]);
 
+const isHoverTrigger = computed(() => props.trigger === 'hover');
+const isClickTrigger = computed(() => props.trigger === 'click');
+const isFocusTrigger = computed(() => props.trigger === 'focus');
+
 const handleMouseEnter = () => {
-  if (props.trigger === 'hover' && !props.disabled) {
-    show();
-  }
+  if (!props.disabled && isHoverTrigger.value) show();
 };
 
 const handleMouseLeave = () => {
-  if (props.trigger === 'hover' && !props.disabled) {
-    hide();
-  }
+  if (!props.disabled && isHoverTrigger.value) hide();
 };
 
 const handleClick = () => {
-  if (props.trigger === 'click' && !props.disabled) {
-    toggle();
-  }
+  if (!props.disabled && isClickTrigger.value) toggle();
 };
 
 const handleFocus = () => {
-  if (props.trigger === 'focus' && !props.disabled) {
-    show();
-  }
+  if (!props.disabled && isFocusTrigger.value) show();
 };
 
 const handleBlur = () => {
-  if (props.trigger === 'focus' && !props.disabled) {
-    hide();
-  }
+  if (!props.disabled && isFocusTrigger.value) hide();
 };
 
 const handlePopperMouseEnter = () => {
-  if (props.trigger === 'hover' && props.enterable) {
-    clearTimers();
-  }
+  if (!props.disabled && isHoverTrigger.value && props.enterable) clearTimers();
 };
 
 const handlePopperMouseLeave = () => {
-  if (props.trigger === 'hover' && props.enterable) {
-    hide();
-  }
+  if (!props.disabled && isHoverTrigger.value && props.enterable) hide();
 };
 
 useClickOutside([tooltipRef, floatingRef], () => {
-  if (popperVisible.value && props.trigger === 'click') {
-    hide();
-  }
+  if (popperVisible.value && isClickTrigger.value) hide();
 });
 
 onBeforeUnmount(() => {

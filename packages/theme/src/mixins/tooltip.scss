@@ -8,23 +8,42 @@
   z-index: 2001;
   background-color: var(--x-tooltip-bg);
   color: var(--x-tooltip-text);
-  padding: var(--x-tooltip-padding);
   border-radius: var(--x-border-radius-base);
   font-size: var(--x-font-size-sm);
   line-height: 1.4;
   max-width: 300px;
   word-wrap: break-word;
-  box-shadow: var(--x-box-shadow-light);
 }
 
 @mixin tooltip-arrow {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   pointer-events: none;
+
+  z-index: -1;
+
+  &::before {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    z-index: -1;
+    content: ' ';
+    transform: rotate(45deg);
+    background: var(--x-tooltip-bg);
+    box-sizing: border-box;
+    border: 1px solid var(--x-tooltip-bg);
+  }
 }
 
 @mixin tooltip-content {
   position: relative;
   z-index: 1;
+  background-color: var(--x-tooltip-bg);
+  color: var(--x-tooltip-text);
+  padding: var(--x-tooltip-padding);
+  border-radius: var(--x-border-radius-base);
+  font-size: var(--x-font-size-sm);
+  line-height: 1.4;
+  box-shadow: var(--x-box-shadow-light);
 }

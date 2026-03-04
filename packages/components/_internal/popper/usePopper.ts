@@ -20,6 +20,8 @@ export interface UsePopperOptions {
   open?: MaybeRef<boolean | undefined>;
   /** 浮层宽度是否匹配触发器宽度 */
   matchWidth?: MaybeRef<boolean>;
+  /** 受控模式下可见状态变更回调 */
+  onVisibleChange?: (visible: boolean) => void;
 }
 
 /**
@@ -68,7 +70,7 @@ export function usePopper(
         })
       );
     }
-    if (showArrowRef.value && arrowRef.value) {
+    if (showArrowRef.value) {
       mw.push(arrowMiddleware({ element: arrowRef }));
     }
     return mw;
@@ -80,6 +82,7 @@ export function usePopper(
     placement: actualPlacement,
     update,
   } = useFloating(referenceRef, floatingRef, {
+    open: visible,
     placement: placementRef,
     strategy: 'fixed',
     middleware,
@@ -103,7 +106,7 @@ export function usePopper(
     return {
       left: x != null ? `${x}px` : '',
       top: y != null ? `${y}px` : '',
-      [staticSide[side]]: '-4px',
+      [staticSide[side]]: '-5px',
     };
   });
 
@@ -118,6 +121,15 @@ export function usePopper(
     }
   };
 
+  const isControlled = computed(() => openRef.value !== undefined);
+
+  const setVisible = (val: boolean) => {
+    if (!isControlled.value) {
+      internalVisible.value = val;
+    }
+    options.onVisibleChange?.(val);
+  };
+
   const show = () => {
     if (disabledRef.value) return;
     clearTimers();
@@ -125,10 +137,10 @@ export function usePopper(
     const delay = openDelayRef.value;
     if (delay > 0) {
       openTimer = setTimeout(() => {
-        internalVisible.value = true;
+        setVisible(true);
       }, delay);
     } else {
-      internalVisible.value = true;
+      setVisible(true);
     }
   };
 
@@ -138,10 +150,10 @@ export function usePopper(
     const delay = closeDelayRef.value;
     if (delay > 0) {
       closeTimer = setTimeout(() => {
-        internalVisible.value = false;
+        setVisible(false);
       }, delay);
     } else {
-      internalVisible.value = false;
+      setVisible(false);
     }
   };
 

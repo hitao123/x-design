@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, type CSSProperties } from 'vue';
+import { ref, computed, type CSSProperties } from 'vue';
 
 defineOptions({
   name: 'PopperContent',
@@ -54,26 +54,14 @@ const emit = defineEmits<{
 
 const contentRef = ref<HTMLElement>();
 const arrowRef = ref<HTMLElement>();
-const rendered = ref(false);
-
 // 控制是否渲染（destroyOnHide 模式下隐藏后销毁 DOM）
 const shouldRender = computed(() => {
   if (props.destroyOnHide) {
     return props.visible;
   }
-  // 非 destroyOnHide 模式下，一旦显示过就一直保留 DOM
-  return rendered.value;
+  // 非 destroyOnHide 模式下，始终渲染 DOM，用 v-show 控制显隐
+  return true;
 });
-
-watch(
-  () => props.visible,
-  (val) => {
-    if (val) {
-      rendered.value = true;
-    }
-  },
-  { immediate: true }
-);
 
 const contentClasses = computed(() => ['x-popper', props.popperClass, props.placementClass]);
 

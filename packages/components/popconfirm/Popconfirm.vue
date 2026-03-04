@@ -3,15 +3,9 @@
     <div ref="referenceRef" class="x-popconfirm__trigger" @click="handleTriggerClick">
       <slot />
     </div>
-    <Teleport to="body">
+    <Teleport to="body" :disabled="!isMounted">
       <Transition name="x-popconfirm-fade">
-        <div
-          v-if="shouldRender"
-          v-show="visible"
-          ref="floatingRef"
-          :class="popperClasses"
-          :style="popperStyles"
-        >
+        <div v-show="visible" ref="floatingRef" :class="popperClasses" :style="popperStyles">
           <div class="x-popconfirm__content">
             <div v-if="!hideIcon" class="x-popconfirm__icon" :style="{ color: iconColor }">
               <slot name="icon">
@@ -37,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, toRef, watch } from 'vue';
+import { ref, computed, toRef, onMounted } from 'vue';
 import { usePopper } from '../_internal/popper';
 import { useClickOutside } from '../_hooks';
 import { XButton } from '../button';
@@ -79,16 +73,10 @@ const { visible, floatingStyles, actualPlacement, toggle, hide } = usePopper(
   }
 );
 
-const rendered = ref(false);
-const shouldRender = computed(() => rendered.value || visible.value);
-
-watch(
-  visible,
-  (val) => {
-    if (val) rendered.value = true;
-  },
-  { immediate: true }
-);
+const isMounted = ref(false);
+onMounted(() => {
+  isMounted.value = true;
+});
 
 const popperStyles = computed(() => ({
   ...floatingStyles.value,

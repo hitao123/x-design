@@ -6,7 +6,10 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(pnpm install:*)",
-      "WebFetch(domain:ant-design.antgroup.com)"
+      "WebFetch(domain:ant-design.antgroup.com)",
+      "Bash(node:*)",
+      "Bash(cat:*)",
+      "Bash(npx vitest:*)"
     ]
   }
 }
