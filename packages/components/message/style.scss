@@ -1,0 +1,100 @@
+@use '../../theme/src/mixins/message.scss' as *;
+
+.x-message {
+  @include message-base;
+
+  &--success {
+    @include message-type(#f0f9eb, #e1f3d8, var(--x-color-success));
+
+    &.is-plain {
+      @include message-plain-type(#f0f9eb, var(--x-color-success));
+    }
+  }
+
+  &--warning {
+    @include message-type(#fdf6ec, #faecd8, var(--x-color-warning));
+
+    &.is-plain {
+      @include message-plain-type(#fdf6ec, var(--x-color-warning));
+    }
+  }
+
+  &--info {
+    @include message-type(#f4f4f5, #e9e9eb, var(--x-color-info));
+
+    &.is-plain {
+      @include message-plain-type(#f4f4f5, var(--x-color-info));
+    }
+  }
+
+  &--error {
+    @include message-type(#fef0f0, #fde2e2, var(--x-color-danger));
+
+    &.is-plain {
+      @include message-plain-type(#fef0f0, var(--x-color-danger));
+    }
+  }
+
+  &__icon {
+    @include message-icon;
+
+    &--success::before {
+      content: '✓';
+      color: var(--x-color-success);
+    }
+
+    &--warning::before {
+      content: '!';
+      color: var(--x-color-warning);
+    }
+
+    &--info::before {
+      content: 'i';
+      color: var(--x-color-info);
+    }
+
+    &--error::before {
+      content: '✕';
+      color: var(--x-color-danger);
+    }
+  }
+
+  &__content {
+    @include message-content;
+  }
+
+  &__close {
+    @include message-close;
+  }
+}
+
+// fade animation
+.x-message-fade-enter-active {
+  animation: x-message-fade-in var(--x-transition-duration);
+}
+
+.x-message-fade-leave-active {
+  animation: x-message-fade-out var(--x-transition-duration);
+}
+
+@keyframes x-message-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes x-message-fade-out {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-100%);
+  }
+}

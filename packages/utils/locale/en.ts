@@ -33,6 +33,12 @@ export const en: LocaleType = {
   form: {
     required: 'This field is required',
   },
+  loading: {
+    text: 'Loading...',
+  },
+  tree: {
+    emptyText: 'No data',
+  },
   pagination: {
     total: 'Total {total}',
     pageSize: '{size} / page',

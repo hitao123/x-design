@@ -1,45 +1,39 @@
 <template>
   <div ref="tooltipRef" class="x-tooltip">
-    <div
-      ref="referenceRef"
-      class="x-tooltip__trigger"
-      @mouseenter="handleMouseEnter"
-      @mouseleave="handleMouseLeave"
-      @click="handleClick"
-      @focusin="handleFocus"
-      @focusout="handleBlur"
+    <PopperTrigger
+      ref="triggerComp"
+      :trigger="trigger"
+      :disabled="disabled"
+      @show="show"
+      @hide="hide"
+      @toggle="toggle"
     >
       <slot />
-    </div>
-    <Teleport to="body" :disabled="!isMounted">
-      <Transition name="x-tooltip-fade">
-        <div
-          v-if="destroyTooltipOnHide ? popperVisible : true"
-          v-show="popperVisible"
-          ref="floatingRef"
-          :class="popperClasses"
-          :style="floatingStyles"
-          @mouseenter="handlePopperMouseEnter"
-          @mouseleave="handlePopperMouseLeave"
-        >
-          <div
-            v-if="showArrow"
-            ref="arrowRef"
-            class="x-tooltip__arrow"
-            :style="computedArrowStyles"
-          />
-          <div class="x-tooltip__content">
-            <slot name="content">{{ content }}</slot>
-          </div>
-        </div>
-      </Transition>
-    </Teleport>
+    </PopperTrigger>
+    <PopperContent
+      ref="contentComp"
+      :visible="popperVisible"
+      :floating-styles="floatingStyles"
+      :arrow-styles="computedArrowStyles"
+      :show-arrow="showArrow"
+      :popper-class="tooltipPopperClass"
+      :placement-class="placementClass"
+      transition="x-tooltip-fade"
+      :enterable="enterable"
+      :destroy-on-hide="destroyTooltipOnHide"
+      @mouseenter="handlePopperMouseEnter"
+      @mouseleave="handlePopperMouseLeave"
+    >
+      <div class="x-tooltip__content">
+        <slot name="content">{{ content }}</slot>
+      </div>
+    </PopperContent>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, toRef, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
-import { usePopper } from '../_internal/popper';
+import { ref, computed, toRef, watch, nextTick, onBeforeUnmount } from 'vue';
+import { usePopper, PopperTrigger, PopperContent } from '../_internal/popper';
 import { useClickOutside } from '../_hooks';
 import type { TooltipProps } from './types';
 
@@ -67,14 +61,12 @@ const emit = defineEmits<{
 }>();
 
 const tooltipRef = ref<HTMLElement>();
-const referenceRef = ref<HTMLElement>();
-const floatingRef = ref<HTMLElement>();
-const arrowRef = ref<HTMLElement>();
-const isMounted = ref(false);
+const triggerComp = ref<InstanceType<typeof PopperTrigger>>();
+const contentComp = ref<InstanceType<typeof PopperContent>>();
 
-onMounted(() => {
-  isMounted.value = true;
-});
+const referenceRef = computed(() => triggerComp.value?.triggerRef);
+const floatingRef = computed(() => contentComp.value?.contentRef);
+const arrowRef = computed(() => contentComp.value?.arrowRef);
 
 const handleVisibleChange = (val: boolean) => {
   emit('update:open', val);
@@ -109,46 +101,24 @@ watch(popperVisible, (val) => {
   }
 });
 
-const popperClasses = computed(() => [
-  'x-tooltip__popper',
-  `x-tooltip__popper--${actualPlacement.value.split('-')[0]}`,
-  props.popperClass,
-]);
+const placementClass = computed(
+  () => `x-tooltip__popper--${actualPlacement.value.split('-')[0]}`
+);
 
-const isHoverTrigger = computed(() => props.trigger === 'hover');
-const isClickTrigger = computed(() => props.trigger === 'click');
-const isFocusTrigger = computed(() => props.trigger === 'focus');
-
-const handleMouseEnter = () => {
-  if (!props.disabled && isHoverTrigger.value) show();
-};
-
-const handleMouseLeave = () => {
-  if (!props.disabled && isHoverTrigger.value) hide();
-};
-
-const handleClick = () => {
-  if (!props.disabled && isClickTrigger.value) toggle();
-};
-
-const handleFocus = () => {
-  if (!props.disabled && isFocusTrigger.value) show();
-};
-
-const handleBlur = () => {
-  if (!props.disabled && isFocusTrigger.value) hide();
-};
+const tooltipPopperClass = computed(() =>
+  ['x-tooltip__popper', props.popperClass].filter(Boolean).join(' ')
+);
 
 const handlePopperMouseEnter = () => {
-  if (!props.disabled && isHoverTrigger.value && props.enterable) clearTimers();
+  if (!props.disabled && props.trigger === 'hover' && props.enterable) clearTimers();
 };
 
 const handlePopperMouseLeave = () => {
-  if (!props.disabled && isHoverTrigger.value && props.enterable) hide();
+  if (!props.disabled && props.trigger === 'hover' && props.enterable) hide();
 };
 
 useClickOutside([tooltipRef, floatingRef], () => {
-  if (popperVisible.value && isClickTrigger.value) hide();
+  if (popperVisible.value && props.trigger === 'click') hide();
 });
 
 onBeforeUnmount(() => {

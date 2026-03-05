@@ -1,0 +1,72 @@
+// Tree mixins
+
+@mixin tree-base {
+  position: relative;
+  cursor: default;
+  background: var(--x-color-white);
+  color: var(--x-color-text-regular);
+  font-size: var(--x-font-size-base);
+}
+
+@mixin tree-node-content {
+  display: flex;
+  align-items: center;
+  height: var(--x-tree-node-height, 28px);
+  cursor: pointer;
+  padding-right: var(--x-spacing-sm);
+
+  &:hover {
+    background-color: var(--x-tree-hover-bg, #f5f7fa);
+  }
+}
+
+@mixin tree-expand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  color: var(--x-color-text-secondary);
+  font-size: 12px;
+  flex-shrink: 0;
+  transition: transform var(--x-transition-duration);
+}
+
+@mixin tree-checkbox-inner {
+  display: inline-block;
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--x-border-color-base);
+  border-radius: var(--x-border-radius-small);
+  background-color: var(--x-color-white);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color var(--x-transition-duration), background-color var(--x-transition-duration);
+
+  &::after {
+    content: '';
+    box-sizing: content-box;
+    border: 1px solid var(--x-color-white);
+    border-left: 0;
+    border-top: 0;
+    height: 7px;
+    width: 3px;
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    transform: rotate(45deg) scaleY(0);
+    transition: transform var(--x-transition-duration) ease-in-out 0.05s;
+    transform-origin: center;
+  }
+}
+
+@mixin tree-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--x-spacing-xl);
+  color: var(--x-color-text-placeholder);
+  font-size: var(--x-font-size-base);
+}

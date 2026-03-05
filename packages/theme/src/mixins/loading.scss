@@ -1,0 +1,47 @@
+// Loading mixins
+
+@mixin loading-mask {
+  position: absolute;
+  z-index: 2000;
+  background-color: var(--x-loading-bg, rgba(255, 255, 255, 0.9));
+  margin: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--x-transition-duration);
+}
+
+@mixin loading-fullscreen {
+  position: fixed;
+  z-index: 2100;
+}
+
+@mixin loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin loading-circular {
+  width: var(--x-loading-spinner-size, 42px);
+  height: var(--x-loading-spinner-size, 42px);
+  animation: x-loading-rotate 2s linear infinite;
+}
+
+@mixin loading-path {
+  stroke: var(--x-color-primary);
+  stroke-width: 3;
+  stroke-linecap: round;
+  animation: x-loading-dash 1.5s ease-in-out infinite;
+}
+
+@mixin loading-text {
+  color: var(--x-color-primary);
+  font-size: var(--x-font-size-sm);
+  margin-top: var(--x-spacing-sm);
+}

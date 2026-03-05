@@ -31,6 +31,12 @@ export const zhCN = {
   form: {
     required: '该字段为必填项',
   },
+  loading: {
+    text: '加载中...',
+  },
+  tree: {
+    emptyText: '暂无数据',
+  },
   pagination: {
     total: '共 {total} 条',
     pageSize: '{size} 条/页',

@@ -45,6 +45,8 @@ export default defineConfig({
           text: '表单组件',
           items: [
             { text: 'Input 输入框', link: '/components/input' },
+            { text: 'Radio 单选框', link: '/components/radio' },
+            { text: 'Checkbox 多选框', link: '/components/checkbox' },
             { text: 'Select 选择器', link: '/components/select' },
             { text: 'Form 表单', link: '/components/form' },
           ],
@@ -53,6 +55,7 @@ export default defineConfig({
           text: '数据展示',
           items: [
             { text: 'Table 表格', link: '/components/table' },
+            { text: 'Tree 树形控件', link: '/components/tree' },
             { text: 'Tooltip 文字提示', link: '/components/tooltip' },
           ],
         },
@@ -60,7 +63,9 @@ export default defineConfig({
           text: '反馈',
           items: [
             { text: 'Dialog 对话框', link: '/components/dialog' },
+            { text: 'Message 消息提示', link: '/components/message' },
             { text: 'Popconfirm 气泡确认框', link: '/components/popconfirm' },
+            { text: 'Loading 加载', link: '/components/loading' },
           ],
         },
       ],

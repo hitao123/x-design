@@ -11,6 +11,11 @@ export { XTooltip } from './tooltip';
 export { XPopconfirm } from './popconfirm';
 export { XForm, XFormItem } from './form';
 export { XConfigProvider } from './config-provider';
+export { XRadio, XRadioGroup } from './radio';
+export { XCheckbox, XCheckboxGroup } from './checkbox';
+export { XLoading, vLoading, loadingService } from './loading';
+export { XMessage } from './message';
+export { XTree } from './tree';
 
 import { XButton } from './button';
 import { XInput } from './input';
@@ -21,6 +26,11 @@ import { XTooltip } from './tooltip';
 import { XPopconfirm } from './popconfirm';
 import { XForm, XFormItem } from './form';
 import { XConfigProvider } from './config-provider';
+import { XRadio, XRadioGroup } from './radio';
+import { XCheckbox, XCheckboxGroup } from './checkbox';
+import { XLoading } from './loading';
+import { XMessage } from './message';
+import { XTree } from './tree';
 
 const components = [
   XButton,
@@ -33,12 +43,21 @@ const components = [
   XForm,
   XFormItem,
   XConfigProvider,
+  XRadio,
+  XRadioGroup,
+  XCheckbox,
+  XCheckboxGroup,
+  XTree,
 ];
 
 const install = (app: App) => {
   components.forEach((component) => {
     app.component(component.name, component);
   });
+  // 注册 Loading 指令和服务
+  XLoading.install(app);
+  // 注册 Message 到全局
+  app.config.globalProperties.$message = XMessage;
 };
 
 export default {
@@ -56,6 +75,11 @@ export type { TooltipProps } from './tooltip';
 export type { PopconfirmProps } from './popconfirm';
 export type { FormProps, FormItemProps, FormItemRule, FormInstance, FormItemContext } from './form';
 export type { ConfigProviderProps } from './config-provider';
+export type { RadioProps, RadioGroupProps, RadioValue } from './radio';
+export type { CheckboxProps, CheckboxGroupProps, CheckboxValue } from './checkbox';
+export type { LoadingOptions, LoadingInstance } from './loading';
+export type { MessageOptions, MessageProps, MessageType, MessageInstance, MessageApi } from './message';
+export type { TreeProps, TreeNodeData, TreeKey } from './tree';
 
 // Dialog 命令式方法导出
 export { confirm, info, success, warning, error } from './dialog';

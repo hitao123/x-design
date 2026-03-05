@@ -1,0 +1,106 @@
+@use '../../theme/src/mixins/tree.scss' as *;
+
+.x-tree {
+  @include tree-base;
+}
+
+.x-tree-node {
+  white-space: nowrap;
+  outline: none;
+
+  &__content {
+    @include tree-node-content;
+  }
+
+  &__expand-icon {
+    @include tree-expand-icon;
+
+    &.is-expanded {
+      .x-tree-node__expand-arrow {
+        transform: rotate(90deg);
+      }
+    }
+
+    &.is-leaf {
+      visibility: hidden;
+    }
+  }
+
+  &__expand-arrow {
+    display: inline-block;
+    font-size: 10px;
+    transition: transform var(--x-transition-duration);
+  }
+
+  &__checkbox {
+    display: inline-flex;
+    align-items: center;
+    margin-right: var(--x-spacing-xs);
+    cursor: pointer;
+  }
+
+  &__checkbox-inner {
+    @include tree-checkbox-inner;
+
+    &.is-checked {
+      border-color: var(--x-color-primary);
+      background-color: var(--x-color-primary);
+
+      &::after {
+        transform: rotate(45deg) scaleY(1);
+      }
+    }
+
+    &.is-indeterminate {
+      border-color: var(--x-color-primary);
+      background-color: var(--x-color-primary);
+
+      &::after {
+        content: '';
+        position: absolute;
+        display: block;
+        border: none;
+        background-color: var(--x-color-white);
+        height: 2px;
+        width: 8px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 1px;
+      }
+    }
+
+    &.is-disabled {
+      background-color: var(--x-bg-color-page);
+      border-color: var(--x-border-color-light);
+      cursor: not-allowed;
+    }
+  }
+
+  &__label {
+    font-size: var(--x-font-size-base);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__children {
+    overflow: hidden;
+  }
+
+  &.is-current {
+    > .x-tree-node__content {
+      background-color: var(--x-tree-current-bg, #ecf5ff);
+    }
+  }
+
+  &.is-disabled {
+    > .x-tree-node__content {
+      cursor: not-allowed;
+      color: var(--x-color-text-placeholder);
+    }
+  }
+}
+
+.x-tree__empty {
+  @include tree-empty;
+}

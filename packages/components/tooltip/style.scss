@@ -2,47 +2,49 @@
 
 .x-tooltip {
   @include tooltip-base;
+
+  // PopperTrigger 内部使用 x-popper__trigger 类名
+  .x-popper__trigger {
+    display: inline-block;
+  }
 }
 
-.x-tooltip__trigger {
-  display: inline-block;
-}
-
+// PopperContent 使用 x-popper 作为根类名，通过 popperClass 追加 x-tooltip__popper
 .x-tooltip__popper {
   @include tooltip-popper;
-}
 
-.x-tooltip__arrow {
-  @include tooltip-arrow;
+  .x-popper__arrow {
+    @include tooltip-arrow;
+  }
+
+  .x-tooltip__content {
+    @include tooltip-content;
+  }
 }
 
 // 各方向箭头：隐藏朝内侧的 border，露出朝外的三角
-.x-tooltip__popper--top .x-tooltip__arrow::before {
+.x-tooltip__popper--top .x-popper__arrow::before {
   border-bottom-color: transparent !important;
   border-right-color: transparent !important;
   border-top-left-radius: 2px;
 }
 
-.x-tooltip__popper--bottom .x-tooltip__arrow::before {
+.x-tooltip__popper--bottom .x-popper__arrow::before {
   border-top-color: transparent !important;
   border-left-color: transparent !important;
   border-bottom-right-radius: 2px;
 }
 
-.x-tooltip__popper--left .x-tooltip__arrow::before {
+.x-tooltip__popper--left .x-popper__arrow::before {
   border-top-color: transparent !important;
   border-right-color: transparent !important;
   border-bottom-left-radius: 2px;
 }
 
-.x-tooltip__popper--right .x-tooltip__arrow::before {
+.x-tooltip__popper--right .x-popper__arrow::before {
   border-bottom-color: transparent !important;
   border-left-color: transparent !important;
   border-top-right-radius: 2px;
-}
-
-.x-tooltip__content {
-  @include tooltip-content;
 }
 
 // Animations

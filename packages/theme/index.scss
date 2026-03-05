@@ -107,4 +107,26 @@
   // Form 特定变量
   --x-form-label-width: 100px;
   --x-form-item-margin: 18px;
+
+  // Radio 特定变量
+  --x-radio-size: 16px;
+  --x-radio-dot-size: 6px;
+  --x-radio-border-color: var(--x-border-color-base);
+
+  // Checkbox 特定变量
+  --x-checkbox-size: 16px;
+  --x-checkbox-border-color: var(--x-border-color-base);
+
+  // Loading 特定变量
+  --x-loading-bg: rgba(255, 255, 255, 0.9);
+  --x-loading-spinner-size: 42px;
+
+  // Message 特定变量
+  --x-message-min-width: 300px;
+  --x-message-max-width: 500px;
+
+  // Tree 特定变量
+  --x-tree-node-height: 28px;
+  --x-tree-hover-bg: #f5f7fa;
+  --x-tree-current-bg: #ecf5ff;
 }

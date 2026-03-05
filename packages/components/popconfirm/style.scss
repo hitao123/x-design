@@ -4,10 +4,6 @@
   @include popconfirm-base;
 }
 
-.x-popconfirm__trigger {
-  display: inline-block;
-}
-
 .x-popconfirm__popper {
   @include popconfirm-popper;
 

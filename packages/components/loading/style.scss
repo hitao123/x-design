@@ -1,0 +1,58 @@
+@use '../../theme/src/mixins/loading.scss' as *;
+
+.x-loading-mask {
+  @include loading-mask;
+
+  &.is-fullscreen {
+    @include loading-fullscreen;
+  }
+}
+
+.x-loading__spinner {
+  @include loading-spinner;
+}
+
+.x-loading__circular {
+  @include loading-circular;
+}
+
+.x-loading__path {
+  @include loading-path;
+}
+
+.x-loading__text {
+  @include loading-text;
+}
+
+// fade transition
+.x-loading-fade-enter-active,
+.x-loading-fade-leave-active {
+  transition: opacity var(--x-transition-duration);
+}
+
+.x-loading-fade-enter-from,
+.x-loading-fade-leave-to {
+  opacity: 0;
+}
+
+// animations
+@keyframes x-loading-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes x-loading-dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -40px;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -120px;
+  }
+}

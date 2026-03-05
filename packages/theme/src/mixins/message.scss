@@ -1,0 +1,65 @@
+// Message mixins
+
+@mixin message-base {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  padding: var(--x-spacing-base) var(--x-spacing-lg);
+  border-radius: var(--x-border-radius-base);
+  min-width: 300px;
+  max-width: 500px;
+  box-sizing: border-box;
+  transition: opacity var(--x-transition-duration), transform var(--x-transition-duration),
+    top var(--x-transition-duration);
+  z-index: 9999;
+  pointer-events: all;
+}
+
+@mixin message-type($bg, $border, $color) {
+  background-color: $bg;
+  border: 1px solid $border;
+  color: $color;
+}
+
+@mixin message-plain-type($bg, $color) {
+  background-color: $bg;
+  color: $color;
+}
+
+@mixin message-icon {
+  margin-right: var(--x-spacing-sm);
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+@mixin message-content {
+  font-size: var(--x-font-size-base);
+  line-height: 1.5;
+  flex: 1;
+  margin: 0;
+}
+
+@mixin message-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: var(--x-spacing-sm);
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  flex-shrink: 0;
+  border-radius: 50%;
+
+  &:hover {
+    opacity: 1;
+  }
+}
