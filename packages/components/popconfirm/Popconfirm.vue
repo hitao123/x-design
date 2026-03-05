@@ -16,7 +16,7 @@
       <div class="x-popconfirm__content">
         <div v-if="!hideIcon" class="x-popconfirm__icon" :style="{ color: iconColor }">
           <slot name="icon">
-            <span>?</span>
+            <IconQuestionFilled />
           </slot>
         </div>
         <div class="x-popconfirm__title">
@@ -37,6 +37,7 @@
 
 <script setup lang="ts">
 import { ref, computed, toRef, onBeforeUnmount } from 'vue';
+import { IconQuestionFilled } from '@x-design/icons';
 import { usePopper, PopperTrigger, PopperContent } from '../_internal/popper';
 import { useClickOutside } from '../_hooks';
 import { XButton } from '../button';

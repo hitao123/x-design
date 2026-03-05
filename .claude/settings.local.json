@@ -9,7 +9,11 @@
       "WebFetch(domain:ant-design.antgroup.com)",
       "Bash(node:*)",
       "Bash(cat:*)",
-      "Bash(npx vitest:*)"
+      "Bash(npx vitest:*)",
+      "Bash(ls:*)",
+      "Bash(head:*)",
+      "Bash(grep:*)",
+      "Bash(npx tsx:*)"
     ]
   }
 }

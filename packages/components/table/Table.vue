@@ -54,8 +54,8 @@
                           sorter.sortState.value.prop === column.prop &&
                           sorter.sortState.value.order === 'ascending',
                       }"
-                      >▲</i
-                    >
+                      ><IconArrowUp
+                    /></i>
                     <i
                       class="x-table__sort-icon x-table__sort-icon--desc"
                       :class="{
@@ -63,8 +63,8 @@
                           sorter.sortState.value.prop === column.prop &&
                           sorter.sortState.value.order === 'descending',
                       }"
-                      >▼</i
-                    >
+                      ><IconArrowDown
+                    /></i>
                   </span>
                   <!-- 筛选图标 -->
                   <TableFilter
@@ -107,8 +107,8 @@
                     class="x-table__expand-icon"
                     :class="{ 'is-expanded': expand.isRowExpanded(row) }"
                     @click.stop="onExpandRow(row)"
-                    >▶</span
-                  >
+                    ><IconArrowRight
+                  /></span>
                 </template>
                 <!-- 树形展开 -->
                 <template
@@ -126,8 +126,8 @@
                       class="x-table__expand-icon"
                       :class="{ 'is-expanded': expand.isRowExpanded(row) }"
                       @click.stop="onExpandRow(row)"
-                      >▶</span
-                    >
+                      ><IconArrowRight
+                    /></span>
                     <span>{{ columnHelpers.getCellValue(row, column, rowIndex) }}</span>
                   </div>
                 </template>
@@ -187,7 +187,7 @@
           :disabled="currentPage <= 1"
           @click="handlePageChange(currentPage - 1)"
         >
-          ‹
+          <IconArrowLeft />
         </button>
         <button
           v-for="page in pageList"
@@ -203,7 +203,7 @@
           :disabled="currentPage >= totalPages"
           @click="handlePageChange(currentPage + 1)"
         >
-          ›
+          <IconArrowRight />
         </button>
       </div>
     </div>
@@ -212,6 +212,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, h, type VNode } from 'vue';
+import { IconArrowUp, IconArrowDown, IconArrowRight, IconArrowLeft } from '@x-design/icons';
 import type { TableProps, TableColumn, SortOrder } from './types';
 import { useSelection } from './composables/useSelection';
 import { useSorter } from './composables/useSorter';

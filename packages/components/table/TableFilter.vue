@@ -1,7 +1,7 @@
 <template>
-  <div class="x-table-filter" ref="filterRef">
+  <div ref="filterRef" class="x-table-filter">
     <span class="x-table-filter__trigger" @click.stop="toggleVisible">
-      <i class="x-table-filter__icon" :class="{ 'is-active': hasActiveFilter }">▼</i>
+      <IconArrowDown class="x-table-filter__icon" :class="{ 'is-active': hasActiveFilter }" />
     </span>
     <Teleport to="body">
       <Transition name="x-table-filter-fade">
@@ -14,17 +14,15 @@
               :class="{ 'is-active': isSelected(filter.value) }"
               @click="handleSelect(filter.value)"
             >
-              <input
-                v-if="filterMultiple"
-                type="checkbox"
-                :checked="isSelected(filter.value)"
-              />
+              <input v-if="filterMultiple" type="checkbox" :checked="isSelected(filter.value)" />
               {{ filter.text }}
             </li>
           </ul>
           <div class="x-table-filter__footer">
             <button class="x-table-filter__btn" @click="handleReset">重置</button>
-            <button class="x-table-filter__btn x-table-filter__btn--primary" @click="handleConfirm">筛选</button>
+            <button class="x-table-filter__btn x-table-filter__btn--primary" @click="handleConfirm">
+              筛选
+            </button>
           </div>
         </div>
       </Transition>
@@ -34,6 +32,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { IconArrowDown } from '@x-design/icons';
 
 const props = withDefaults(
   defineProps<{
@@ -44,7 +43,7 @@ const props = withDefaults(
   {
     filterMultiple: true,
     activeValues: () => [],
-  },
+  }
 );
 
 const emit = defineEmits<{

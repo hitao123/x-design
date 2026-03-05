@@ -4,10 +4,17 @@
 export { default as IconWrapper } from './src/components/IconWrapper.vue';
 
 // Icons
+export { default as IconArrowDown } from './src/icons/ArrowDown.vue';
 export { default as IconArrowLeft } from './src/icons/ArrowLeft.vue';
 export { default as IconArrowRight } from './src/icons/ArrowRight.vue';
+export { default as IconArrowUp } from './src/icons/ArrowUp.vue';
 export { default as IconCheck } from './src/icons/Check.vue';
 export { default as IconClose } from './src/icons/Close.vue';
+export { default as IconEye } from './src/icons/Eye.vue';
+export { default as IconEyeOff } from './src/icons/EyeOff.vue';
+export { default as IconInfoFilled } from './src/icons/InfoFilled.vue';
+export { default as IconQuestionFilled } from './src/icons/QuestionFilled.vue';
+export { default as IconWarningFilled } from './src/icons/WarningFilled.vue';
 
 // Types
 export type { IconProps } from './src/types';

@@ -67,7 +67,7 @@ export default {
 
 // 类型导出
 export type { ButtonProps } from './button';
-export type { InputProps } from './input';
+export type { InputProps, InputAutoSize } from './input';
 export type { SelectProps, SelectOption } from './select';
 export type { TableProps, TableColumn, SortState, SortOrder, FilterState, TablePagination } from './table';
 export type { DialogProps, DialogConfirmOptions, DialogMethods, DialogMethodType } from './dialog';

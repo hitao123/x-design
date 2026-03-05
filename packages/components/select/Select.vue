@@ -5,7 +5,7 @@
       <div v-if="multiple && selectedOptions.length > 0" class="x-select__tags">
         <span v-for="option in selectedOptions" :key="option.value" class="x-select__tag">
           {{ option.label }}
-          <i class="x-select__tag-close" @click.stop="removeTag(option)">×</i>
+          <IconClose class="x-select__tag-close" @click.stop="removeTag(option)" />
         </span>
       </div>
 
@@ -25,14 +25,12 @@
 
       <!-- 图标 -->
       <span class="x-select__suffix">
-        <i
+        <IconClose
           v-if="clearable && !disabled && hasValue"
           class="x-select__clear"
           @click.stop="handleClear"
-        >
-          ×
-        </i>
-        <i v-else class="x-select__arrow" :class="{ 'is-reverse': dropdownVisible }"> ▼ </i>
+        />
+        <IconArrowDown v-else class="x-select__arrow" :class="{ 'is-reverse': dropdownVisible }" />
       </span>
     </div>
   </div>
@@ -60,7 +58,7 @@
             @click="handleSelect(option)"
           >
             <span>{{ option.label }}</span>
-            <i v-if="isSelected(option)" class="x-select__option-check">✓</i>
+            <IconCheck v-if="isSelected(option)" class="x-select__option-check" />
           </li>
         </ul>
       </div>
@@ -70,6 +68,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue';
+import { IconClose, IconCheck, IconArrowDown } from '@x-design/icons';
 import { usePopper } from '../_internal/popper';
 import { useClickOutside } from '../_hooks';
 import type { SelectProps, SelectOption } from './types';

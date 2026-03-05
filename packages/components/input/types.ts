@@ -1,3 +1,7 @@
+import type { Component } from 'vue';
+
+export type InputAutoSize = boolean | { minRows?: number; maxRows?: number };
+
 export interface InputProps {
   modelValue?: string;
   type?: string;
@@ -7,4 +11,10 @@ export interface InputProps {
   readonly?: boolean;
   clearable?: boolean;
   maxlength?: number;
+  prefixIcon?: Component;
+  suffixIcon?: Component;
+  showPassword?: boolean;
+  showWordLimit?: boolean;
+  autosize?: InputAutoSize;
+  rows?: number;
 }

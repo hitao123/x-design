@@ -1,5 +1,8 @@
 @use '../../theme/src/mixins/input.scss' as *;
 
+// ===========================
+// Input 模式
+// ===========================
 .x-input {
   @include input-base;
 
@@ -24,8 +27,134 @@
       border-color: var(--x-color-primary);
     }
   }
+
+  // 有前缀时，增加左侧内边距
+  &--prefix {
+    .x-input__inner {
+      padding-left: 30px;
+    }
+  }
+
+  // 有后缀时，增加右侧内边距
+  &--suffix {
+    .x-input__inner {
+      padding-right: 30px;
+    }
+  }
 }
 
 .x-input__inner {
   @include input-inner;
+}
+
+// 前缀容器
+.x-input__prefix {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--x-spacing-sm);
+  color: var(--x-color-text-placeholder);
+  pointer-events: none;
+  z-index: 1;
+}
+
+// 后缀容器
+.x-input__suffix {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--x-spacing-sm);
+  color: var(--x-color-text-placeholder);
+  z-index: 1;
+  gap: var(--x-spacing-xs);
+}
+
+// 图标基础样式
+.x-input__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--x-font-size-base);
+  line-height: 1;
+  font-style: normal;
+}
+
+// 清除按钮
+.x-input__clear {
+  cursor: pointer;
+  color: var(--x-color-text-placeholder);
+  transition: color var(--x-transition-duration) var(--x-transition-function);
+
+  &:hover {
+    color: var(--x-color-text-secondary);
+  }
+}
+
+// 密码切换按钮
+.x-input__password {
+  cursor: pointer;
+  color: var(--x-color-text-placeholder);
+  transition: color var(--x-transition-duration) var(--x-transition-function);
+
+  &:hover {
+    color: var(--x-color-text-secondary);
+  }
+}
+
+// 字数统计（input 模式）
+.x-input__count {
+  font-size: var(--x-font-size-xs);
+  color: var(--x-color-text-placeholder);
+  white-space: nowrap;
+}
+
+// ===========================
+// Textarea 模式
+// ===========================
+.x-textarea {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  font-size: var(--x-font-size-base);
+  line-height: 1.5;
+
+  &.is-disabled {
+    .x-textarea__inner {
+      background-color: var(--x-bg-color-page);
+      border-color: var(--x-border-color-light);
+      color: var(--x-color-text-placeholder);
+      cursor: not-allowed;
+      resize: none;
+    }
+  }
+
+  &.is-focused {
+    .x-textarea__inner {
+      border-color: var(--x-color-primary);
+    }
+  }
+}
+
+.x-textarea__inner {
+  @include textarea-inner;
+}
+
+// 字数统计（textarea 模式）
+.x-textarea__count {
+  position: absolute;
+  bottom: var(--x-spacing-sm);
+  right: var(--x-spacing-base);
+  font-size: var(--x-font-size-xs);
+  color: var(--x-color-text-placeholder);
+  background: var(--x-input-bg);
+  padding: 0 2px;
+  line-height: 1;
 }

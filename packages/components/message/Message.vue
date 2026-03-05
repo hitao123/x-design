@@ -14,7 +14,7 @@
         <slot>{{ message }}</slot>
       </p>
       <button v-if="showClose" class="x-message__close" @click="close">
-        &times;
+        <IconClose />
       </button>
     </div>
   </Transition>
@@ -22,6 +22,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { IconClose } from '@x-design/icons';
 import type { MessageProps } from './types';
 
 defineOptions({
@@ -48,10 +49,7 @@ const classes = computed(() => [
   },
 ]);
 
-const iconClass = computed(() => [
-  'x-message__icon',
-  `x-message__icon--${props.type}`,
-]);
+const iconClass = computed(() => ['x-message__icon', `x-message__icon--${props.type}`]);
 
 const customStyle = computed(() => ({
   top: `${props.offset}px`,

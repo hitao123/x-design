@@ -1,9 +1,13 @@
-import { h, render, ref, nextTick } from 'vue';
+import { h, render, ref, nextTick, type Component } from 'vue';
 import Dialog from './Dialog.vue';
 import Button from '../button/Button.vue';
+import { IconInfoFilled, IconCheck, IconWarningFilled, IconClose } from '@x-design/icons';
 import type { DialogConfirmOptions, DialogMethodType } from './types';
 
-function createDialog(options: DialogConfirmOptions, type: DialogMethodType = 'confirm'): Promise<void> {
+function createDialog(
+  options: DialogConfirmOptions,
+  type: DialogMethodType = 'confirm'
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const {
       title = type === 'confirm' ? '提示' : getDefaultTitle(type),
@@ -77,18 +81,16 @@ function createDialog(options: DialogConfirmOptions, type: DialogMethodType = 'c
           default: () =>
             h('div', { class: `x-dialog-confirm__content x-dialog-confirm__content--${type}` }, [
               type !== 'confirm'
-                ? h('span', { class: `x-dialog-confirm__icon x-dialog-confirm__icon--${type}` }, getIcon(type))
+                ? h('span', { class: `x-dialog-confirm__icon x-dialog-confirm__icon--${type}` }, [
+                    h(getIcon(type)!),
+                  ])
                 : null,
               h('span', null, message),
             ]),
           footer: () =>
             h('div', { class: 'x-dialog-confirm__footer' }, [
               showCancelButton
-                ? h(
-                    Button,
-                    { onClick: handleCancel },
-                    { default: () => cancelButtonText },
-                  )
+                ? h(Button, { onClick: handleCancel }, { default: () => cancelButtonText })
                 : null,
               h(
                 Button,
@@ -97,10 +99,10 @@ function createDialog(options: DialogConfirmOptions, type: DialogMethodType = 'c
                   disabled: loading.value,
                   onClick: handleConfirm,
                 },
-                { default: () => (loading.value ? '加载中...' : confirmButtonText) },
+                { default: () => (loading.value ? '加载中...' : confirmButtonText) }
               ),
             ]),
-        },
+        }
       );
 
       render(vnode, container);
@@ -132,14 +134,14 @@ function getButtonType(type: DialogMethodType): string {
   return types[type] || 'primary';
 }
 
-function getIcon(type: DialogMethodType): string {
-  const icons: Record<string, string> = {
-    info: 'ℹ',
-    success: '✓',
-    warning: '⚠',
-    error: '✕',
+function getIcon(type: DialogMethodType): Component | null {
+  const icons: Record<string, Component> = {
+    info: IconInfoFilled,
+    success: IconCheck,
+    warning: IconWarningFilled,
+    error: IconClose,
   };
-  return icons[type] || '';
+  return icons[type] || null;
 }
 
 export function confirm(options: DialogConfirmOptions): Promise<void> {

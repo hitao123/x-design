@@ -7,7 +7,7 @@ import { onBeforeUnmount, onMounted, type Ref } from 'vue';
  */
 export function useClickOutside(
   elementRefs: Ref<HTMLElement | undefined>[],
-  callback: (event: MouseEvent) => void,
+  callback: (event: MouseEvent) => void
 ) {
   const handler = (event: MouseEvent) => {
     const target = event.target as Node;

@@ -1,7 +1,11 @@
 <template>
   <Teleport to="body" :disabled="!appendToBody">
     <Transition name="x-dialog-fade">
-      <div v-if="visible" class="x-dialog__wrapper" @click.self="handleWrapperClick">
+      <div
+        v-if="visible"
+        :class="['x-dialog__wrapper', { 'x-dialog__wrapper--center': center }]"
+        @click.self="handleWrapperClick"
+      >
         <div
           :class="dialogClasses"
           :style="dialogStyle"
@@ -20,7 +24,7 @@
               aria-label="Close"
               @click="handleClose"
             >
-              <span>×</span>
+              <IconClose />
             </button>
           </div>
           <div class="x-dialog__body">
@@ -40,6 +44,7 @@
 
 <script setup lang="ts">
 import { computed, watch, onMounted, onBeforeUnmount, toRef } from 'vue';
+import { IconClose } from '@x-design/icons';
 import { useLockScroll } from '../_hooks';
 import type { DialogProps } from './types';
 
@@ -87,7 +92,7 @@ const dialogClasses = computed(() => [
 
 const dialogStyle = computed(() => ({
   width: typeof props.width === 'number' ? `${props.width}px` : props.width,
-  marginTop: props.top,
+  marginTop: props.center ? undefined : props.top,
 }));
 
 const doClose = () => {

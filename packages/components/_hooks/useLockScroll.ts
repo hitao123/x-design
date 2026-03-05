@@ -34,7 +34,7 @@ export function useLockScroll(shouldLock: Ref<boolean>) {
         unlock();
       }
     },
-    { immediate: true },
+    { immediate: true }
   );
 
   // 组件卸载时确保解锁

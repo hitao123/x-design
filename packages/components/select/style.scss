@@ -6,7 +6,7 @@
   &--small {
     @include select-size(
       var(--x-input-small-height),
-      var(--x-input-small-padding),
+      11px,
       var(--x-font-size-sm)
     );
   }
@@ -14,7 +14,7 @@
   &--medium {
     @include select-size(
       var(--x-input-medium-height),
-      var(--x-input-medium-padding),
+      15px,
       var(--x-font-size-base)
     );
   }
@@ -22,7 +22,7 @@
   &--large {
     @include select-size(
       var(--x-input-large-height),
-      var(--x-input-large-padding),
+      19px,
       var(--x-font-size-lg)
     );
   }
@@ -153,6 +153,7 @@
   max-height: 274px;
   overflow: auto;
   z-index: var(--x-z-index-popper);
+  padding: 6px 0;
 }
 
 .x-select__loading,

@@ -10,7 +10,7 @@
         :class="{ 'is-expanded': isExpanded, 'is-leaf': isLeaf }"
         @click.stop="handleExpand"
       >
-        <span v-if="!isLeaf" class="x-tree-node__expand-arrow">&#9654;</span>
+        <IconArrowRight v-if="!isLeaf" class="x-tree-node__expand-arrow" />
       </span>
       <span v-if="showCheckbox" class="x-tree-node__checkbox" @click.stop="handleCheck">
         <span
@@ -41,6 +41,7 @@
 
 <script setup lang="ts">
 import { computed, inject } from 'vue';
+import { IconArrowRight } from '@x-design/icons';
 import type { TreeNodeProps, TreeContext } from './types';
 
 defineOptions({

@@ -40,11 +40,41 @@
 
 @mixin input-disabled {
   cursor: not-allowed;
-  
+
   .x-input__inner {
     background-color: var(--x-bg-color-page);
     border-color: var(--x-border-color-light);
     color: var(--x-color-text-placeholder);
     cursor: not-allowed;
+  }
+}
+
+@mixin textarea-inner {
+  display: block;
+  width: 100%;
+  min-height: var(--x-textarea-min-height);
+  padding: var(--x-textarea-padding);
+  background-color: var(--x-input-bg);
+  border: 1px solid var(--x-input-border);
+  border-radius: var(--x-border-radius-base);
+  color: var(--x-input-text);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  resize: vertical;
+  transition: border-color var(--x-transition-duration) var(--x-transition-function);
+  outline: none;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: var(--x-color-text-placeholder);
+  }
+
+  &:hover {
+    border-color: var(--x-color-text-secondary);
+  }
+
+  &:focus {
+    border-color: var(--x-color-primary);
   }
 }
