@@ -41,7 +41,10 @@
 
   &.is-error {
     .x-form-item__content {
-      :deep(.x-input__inner) {
+      :deep(.x-input__wrapper) {
+        border-color: var(--x-color-danger);
+      }
+      :deep(.x-textarea__inner) {
         border-color: var(--x-color-danger);
       }
     }

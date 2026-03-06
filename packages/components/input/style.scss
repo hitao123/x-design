@@ -21,26 +21,10 @@
   &.is-disabled {
     @include input-disabled;
   }
+}
 
-  &.is-focused {
-    .x-input__inner {
-      border-color: var(--x-color-primary);
-    }
-  }
-
-  // 有前缀时，增加左侧内边距
-  &--prefix {
-    .x-input__inner {
-      padding-left: 30px;
-    }
-  }
-
-  // 有后缀时，增加右侧内边距
-  &--suffix {
-    .x-input__inner {
-      padding-right: 30px;
-    }
-  }
+.x-input__wrapper {
+  @include input-wrapper;
 }
 
 .x-input__inner {
@@ -49,32 +33,25 @@
 
 // 前缀容器
 .x-input__prefix {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 var(--x-spacing-sm);
+  flex-shrink: 0;
+  padding-left: var(--x-spacing-sm);
   color: var(--x-color-text-placeholder);
-  pointer-events: none;
-  z-index: 1;
+  white-space: nowrap;
 }
 
 // 后缀容器
 .x-input__suffix {
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 var(--x-spacing-sm);
+  flex-shrink: 0;
+  padding-right: var(--x-spacing-sm);
   color: var(--x-color-text-placeholder);
-  z-index: 1;
   gap: var(--x-spacing-xs);
+  white-space: nowrap;
 }
 
 // 图标基础样式

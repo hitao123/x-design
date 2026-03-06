@@ -23,57 +23,60 @@
 
   <!-- Input 模式 -->
   <div v-else :class="wrapperClasses" @mouseenter="hovering = true" @mouseleave="hovering = false">
-    <!-- 前缀区域 -->
-    <span v-if="hasPrefix" class="x-input__prefix">
-      <slot name="prefix">
-        <component :is="props.prefixIcon" v-if="props.prefixIcon" class="x-input__icon" />
-      </slot>
-    </span>
-
-    <input
-      ref="inputRef"
-      class="x-input__inner"
-      :type="inputType"
-      :value="modelValue"
-      :placeholder="placeholder"
-      :disabled="disabled"
-      :readonly="readonly"
-      :maxlength="maxlength"
-      @input="handleInput"
-      @change="handleChange"
-      @focus="handleFocus"
-      @blur="handleBlur"
-    />
-
-    <!-- 后缀区域 -->
-    <span v-if="suffixVisible" class="x-input__suffix">
-      <!-- 清除按钮 -->
-      <IconClose v-if="showClearIcon" class="x-input__icon x-input__clear" @click="handleClear" />
-
-      <!-- 密码切换 -->
-      <component
-        :is="passwordVisible ? IconEye : IconEyeOff"
-        v-if="showPasswordToggle"
-        class="x-input__icon x-input__password"
-        @click="togglePasswordVisible"
-      />
-
-      <!-- 字数统计 -->
-      <span v-if="isWordLimitVisible" class="x-input__count">
-        {{ textLength }}/{{ maxlength }}
+    <div :class="innerWrapperClasses" @click="handleWrapperClick">
+      <!-- 前缀区域 -->
+      <span v-if="hasPrefix" class="x-input__prefix">
+        <slot name="prefix">
+          <component :is="props.prefixIcon" v-if="props.prefixIcon" class="x-input__icon" />
+        </slot>
       </span>
 
-      <!-- 后缀图标/插槽 -->
-      <slot name="suffix">
-        <component :is="props.suffixIcon" v-if="props.suffixIcon" class="x-input__icon" />
-      </slot>
-    </span>
+      <input
+        ref="inputRef"
+        class="x-input__inner"
+        :type="inputType"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :disabled="disabled"
+        :readonly="readonly"
+        :maxlength="maxlength"
+        @input="handleInput"
+        @change="handleChange"
+        @focus="handleFocus"
+        @blur="handleBlur"
+      />
+
+      <!-- 后缀区域 -->
+      <span v-if="suffixVisible" class="x-input__suffix">
+        <!-- 清除按钮 -->
+        <IconClose v-if="showClearIcon" class="x-input__icon x-input__clear" @click="handleClear" />
+
+        <!-- 密码切换 -->
+        <component
+          :is="passwordVisible ? IconEye : IconEyeOff"
+          v-if="showPasswordToggle"
+          class="x-input__icon x-input__password"
+          @click="togglePasswordVisible"
+        />
+
+        <!-- 字数统计 -->
+        <span v-if="isWordLimitVisible" class="x-input__count">
+          {{ textLength }}/{{ maxlength }}
+        </span>
+
+        <!-- 后缀图标/插槽 -->
+        <slot name="suffix">
+          <component :is="props.suffixIcon" v-if="props.suffixIcon" class="x-input__icon" />
+        </slot>
+      </span>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted, useSlots, shallowRef } from 'vue';
 import { IconClose, IconEye, IconEyeOff } from '@x-design/icons';
+import { useFormItem } from '../_hooks';
 import type { InputProps } from './types';
 
 defineOptions({
@@ -101,6 +104,7 @@ const emit = defineEmits<{
 }>();
 
 const slots = useSlots();
+const { validateState } = useFormItem();
 
 const inputRef = ref<HTMLInputElement>();
 const textareaRef = ref<HTMLTextAreaElement>();
@@ -161,9 +165,16 @@ const wrapperClasses = computed(() => [
   `x-input--${props.size}`,
   {
     'is-disabled': props.disabled,
-    'is-focused': isFocused.value,
     'x-input--prefix': hasPrefix.value,
     'x-input--suffix': suffixVisible.value,
+  },
+]);
+
+const innerWrapperClasses = computed(() => [
+  'x-input__wrapper',
+  {
+    'is-focused': isFocused.value,
+    'is-error': validateState.value === 'error',
   },
 ]);
 
@@ -268,6 +279,11 @@ const handleClear = () => {
   nextTick(() => {
     inputRef.value?.focus();
   });
+};
+
+const handleWrapperClick = () => {
+  if (props.disabled) return;
+  inputRef.value?.focus();
 };
 
 const togglePasswordVisible = () => {

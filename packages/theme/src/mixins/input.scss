@@ -1,38 +1,58 @@
 // Input mixins
 
 @mixin input-base {
-  display: inline-block;
+  display: inline-flex;
   position: relative;
   width: 100%;
   font-size: var(--x-font-size-base);
   line-height: 1.5;
 }
 
-@mixin input-inner {
+@mixin input-wrapper {
+  display: inline-flex;
+  align-items: center;
   width: 100%;
   background-color: var(--x-input-bg);
   border: 1px solid var(--x-input-border);
   border-radius: var(--x-border-radius-base);
-  color: var(--x-input-text);
   transition: border-color var(--x-transition-duration) var(--x-transition-function);
-  outline: none;
-  
-  &::placeholder {
-    color: var(--x-color-text-placeholder);
-  }
-  
+  box-sizing: border-box;
+
   &:hover {
     border-color: var(--x-color-text-secondary);
   }
-  
-  &:focus {
+
+  &.is-focused {
     border-color: var(--x-color-primary);
+  }
+
+  &.is-error {
+    border-color: var(--x-color-danger);
+  }
+}
+
+@mixin input-inner {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--x-input-text);
+  outline: none;
+  font-family: inherit;
+  line-height: inherit;
+
+  &::placeholder {
+    color: var(--x-color-text-placeholder);
   }
 }
 
 @mixin input-size($height, $padding, $font-size) {
-  .x-input__inner {
+  .x-input__wrapper {
     height: $height;
+  }
+
+  .x-input__inner {
     padding: $padding;
     font-size: $font-size;
   }
@@ -41,9 +61,12 @@
 @mixin input-disabled {
   cursor: not-allowed;
 
-  .x-input__inner {
+  .x-input__wrapper {
     background-color: var(--x-bg-color-page);
     border-color: var(--x-border-color-light);
+  }
+
+  .x-input__inner {
     color: var(--x-color-text-placeholder);
     cursor: not-allowed;
   }

@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onMounted, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, inject, onMounted, onBeforeUnmount, provide, ref, watch } from 'vue';
 import Schema from 'async-validator';
 import type { FormItemProps, FormItemRule } from './types';
 
@@ -37,6 +37,8 @@ const formContext = inject<any>('xForm', null);
 const validateState = ref<'' | 'success' | 'error' | 'validating'>('');
 const validateMessage = ref('');
 const initialValue = ref<any>();
+
+provide('xFormItem', { validateState });
 
 const formItemClasses = computed(() => [
   'x-form-item',
