@@ -6,4 +6,7 @@ export interface ButtonProps {
   plain?: boolean;
   round?: boolean;
   circle?: boolean;
+  loading?: boolean;
+  icon?: string;
+  loadingIcon?: string;
 }

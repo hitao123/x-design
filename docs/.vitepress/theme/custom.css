@@ -21,6 +21,19 @@
   margin: 24px 0;
 }
 
+/* 按钮行样式 - 为按钮示例提供水平间距 */
+.button-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.button-row:last-child {
+  margin-bottom: 0;
+}
+
 /* 覆盖 VitePress 对组件内 table 的默认样式 */
 .vp-doc .x-table table {
   margin: 0;

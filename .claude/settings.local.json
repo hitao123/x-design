@@ -13,7 +13,10 @@
       "Bash(ls:*)",
       "Bash(head:*)",
       "Bash(grep:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(tail:*)",
+      "Bash(kill %1:*)",
+      "Bash(pnpm type-check:*)"
     ]
   }
 }
