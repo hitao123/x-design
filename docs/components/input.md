@@ -6,7 +6,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { XInput } from '@x-design/components';
+import { XInput, XSelect } from '@x-design/components';
 import { IconArrowRight } from '@x-design/icons';
 
 const input1 = ref('');
@@ -23,6 +23,15 @@ const password1 = ref('');
 const clearable1 = ref('可清除的内容');
 const limit1 = ref('');
 const limit2 = ref('');
+const value = ref('');
+
+const options = [
+  { label: '选项1', value: '1' },
+  { label: '选项2', value: '2' },
+  { label: '选项3', value: '3' },
+  { label: '选项4', value: '4' },
+  { label: '选项5', value: '5' },
+];
 </script>
 
 <div class="demo-block">
@@ -98,7 +107,7 @@ const input = ref('');
 import { ref } from 'vue';
 import { XInput } from '@x-design/components';
 
-const input = ref('');
+const input = ref('可清除的内容');
 </script>
 ```
 
@@ -143,6 +152,14 @@ const password = ref('');
       </template>
     </XInput>
   </div>
+  <div style="margin-top: 12px">
+    <XInput v-model="input3" placeholder="前缀插槽">
+      <template #prefix>
+        <XSelect v-model="value" :options="options" placeholder="请选择" />
+      </template>
+    </XInput>
+  </div>
+
 </div>
 
 ```vue
@@ -158,6 +175,12 @@ const password = ref('');
   <XInput v-model="input3" placeholder="前缀插槽">
     <template #prefix>
       <span>https://</span>
+    </template>
+  </XInput>
+
+  <XInput v-model="input3" placeholder="前缀插槽">
+    <template #prefix>
+      <XSelect v-model="value" :options="options" placeholder="请选择" />
     </template>
   </XInput>
 </template>
@@ -277,45 +300,45 @@ const textarea = ref('');
 
 ### Props
 
-| 参数 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| model-value / v-model | 绑定值 | `string` | `''` |
-| type | 类型，支持 `'textarea'` | `string` | `'text'` |
-| size | 尺寸（仅 input 模式） | `'small' \| 'medium' \| 'large'` | `'medium'` |
-| placeholder | 占位文本 | `string` | `''` |
-| disabled | 是否禁用 | `boolean` | `false` |
-| readonly | 是否只读 | `boolean` | `false` |
-| maxlength | 最大输入长度 | `number` | - |
-| clearable | 是否可清空 | `boolean` | `false` |
-| show-password | 是否显示切换密码图标 | `boolean` | `false` |
-| show-word-limit | 是否显示字数统计（需配合 maxlength） | `boolean` | `false` |
-| prefix-icon | 前缀图标组件 | `Component` | - |
-| suffix-icon | 后缀图标组件 | `Component` | - |
-| rows | textarea 行数 | `number` | `2` |
-| autosize | textarea 自适应高度 | `boolean \| { minRows?: number; maxRows?: number }` | `false` |
+| 参数                  | 说明                                 | 类型                                                | 默认值     |
+| --------------------- | ------------------------------------ | --------------------------------------------------- | ---------- |
+| model-value / v-model | 绑定值                               | `string`                                            | `''`       |
+| type                  | 类型，支持 `'textarea'`              | `string`                                            | `'text'`   |
+| size                  | 尺寸（仅 input 模式）                | `'small' \| 'medium' \| 'large'`                    | `'medium'` |
+| placeholder           | 占位文本                             | `string`                                            | `''`       |
+| disabled              | 是否禁用                             | `boolean`                                           | `false`    |
+| readonly              | 是否只读                             | `boolean`                                           | `false`    |
+| maxlength             | 最大输入长度                         | `number`                                            | -          |
+| clearable             | 是否可清空                           | `boolean`                                           | `false`    |
+| show-password         | 是否显示切换密码图标                 | `boolean`                                           | `false`    |
+| show-word-limit       | 是否显示字数统计（需配合 maxlength） | `boolean`                                           | `false`    |
+| prefix-icon           | 前缀图标组件                         | `Component`                                         | -          |
+| suffix-icon           | 后缀图标组件                         | `Component`                                         | -          |
+| rows                  | textarea 行数                        | `number`                                            | `2`        |
+| autosize              | textarea 自适应高度                  | `boolean \| { minRows?: number; maxRows?: number }` | `false`    |
 
 ### Events
 
-| 事件名 | 说明 | 类型 |
-| --- | --- | --- |
-| input | 输入时触发 | `(value: string) => void` |
-| change | 值改变时触发 | `(value: string) => void` |
-| focus | 获得焦点时触发 | `(event: FocusEvent) => void` |
-| blur | 失去焦点时触发 | `(event: FocusEvent) => void` |
-| clear | 点击清除按钮时触发 | `() => void` |
+| 事件名 | 说明               | 类型                          |
+| ------ | ------------------ | ----------------------------- |
+| input  | 输入时触发         | `(value: string) => void`     |
+| change | 值改变时触发       | `(value: string) => void`     |
+| focus  | 获得焦点时触发     | `(event: FocusEvent) => void` |
+| blur   | 失去焦点时触发     | `(event: FocusEvent) => void` |
+| clear  | 点击清除按钮时触发 | `() => void`                  |
 
 ### Slots
 
-| 插槽名 | 说明 |
-| --- | --- |
+| 插槽名 | 说明           |
+| ------ | -------------- |
 | prefix | 输入框前缀内容 |
 | suffix | 输入框后缀内容 |
 
 ### Exposes
 
-| 方法名 | 说明 | 类型 |
-| --- | --- | --- |
-| focus | 使输入框获取焦点 | `() => void` |
-| blur | 使输入框失去焦点 | `() => void` |
-| resizeTextarea | 手动触发 textarea 高度重新计算 | `() => void` |
-| ref | 原生 input/textarea 元素引用 | `Ref<HTMLInputElement \| HTMLTextAreaElement>` |
+| 方法名         | 说明                           | 类型                                           |
+| -------------- | ------------------------------ | ---------------------------------------------- |
+| focus          | 使输入框获取焦点               | `() => void`                                   |
+| blur           | 使输入框失去焦点               | `() => void`                                   |
+| resizeTextarea | 手动触发 textarea 高度重新计算 | `() => void`                                   |
+| ref            | 原生 input/textarea 元素引用   | `Ref<HTMLInputElement \| HTMLTextAreaElement>` |

@@ -4,3 +4,4 @@ export { useZIndex } from './useZIndex';
 export { useId } from './useId';
 export { useLocale } from './useLocale';
 export { useFormItem } from './useFormItem';
+export { useVirtualList } from './useVirtualList';
