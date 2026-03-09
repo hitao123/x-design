@@ -33,12 +33,12 @@ export function useColumns(columns: () => TableColumn[]) {
    * 固定列的 sticky 定位样式（仅用于 th/td）
    * 计算累计偏移量，使多个固定列不重叠
    */
-  const getFixedStyle = (column: TableColumn) => {
+  const getFixedStyle = (column: TableColumn, isHeader = false) => {
     if (!column.fixed) return undefined;
     const cols = columns();
     const style: any = {
       position: 'sticky',
-      zIndex: 1,
+      zIndex: isHeader ? 4 : 2,
     };
 
     if (column.fixed === 'left') {
@@ -64,12 +64,33 @@ export function useColumns(columns: () => TableColumn[]) {
     return style;
   };
 
+  /**
+   * 是否存在固定列
+   */
+  const hasFixedColumns = () => {
+    return columns().some((col) => col.fixed);
+  };
+
+  /**
+   * 计算所有列宽之和，用于设置 table min-width 以强制水平滚动
+   */
+  const getTableMinWidth = (): string | undefined => {
+    if (!hasFixedColumns()) return undefined;
+    const cols = columns();
+    let total = 0;
+    for (const col of cols) {
+      total += parseColumnWidth(col.width) || parseColumnWidth(col.minWidth) || 100;
+    }
+    return `${total}px`;
+  };
+
   const getHeaderClass = (column: TableColumn) => [
     'x-table__cell',
     column.align ? `x-table__cell--${column.align}` : '',
     {
       'is-sortable': column.sortable,
-      'is-fixed': column.fixed,
+      'is-fixed-left': column.fixed === 'left',
+      'is-fixed-right': column.fixed === 'right',
       'is-filterable': column.filters && column.filters.length > 0,
     },
   ];
@@ -98,6 +119,8 @@ export function useColumns(columns: () => TableColumn[]) {
     getHeaderClass,
     getCellValue,
     hasExpandColumn,
+    hasFixedColumns,
+    getTableMinWidth,
     getTreeColumnIndex,
   };
 }

@@ -16,7 +16,10 @@
       "Bash(npx tsx:*)",
       "Bash(tail:*)",
       "Bash(kill %1:*)",
-      "Bash(pnpm type-check:*)"
+      "Bash(pnpm type-check:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm:*)",
+      "Bash(npx sass:*)"
     ]
   }
 }

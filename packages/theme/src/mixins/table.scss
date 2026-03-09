@@ -2,6 +2,7 @@
 
 @mixin table-base {
   width: 100%;
+  overflow: hidden;
   font-size: var(--x-font-size-base);
   color: var(--x-text-color-regular, #606266);
   line-height: 1.5715;

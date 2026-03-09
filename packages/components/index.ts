@@ -17,6 +17,9 @@ export { XLoading, vLoading, loadingService } from './loading';
 export { XMessage } from './message';
 export { XTree } from './tree';
 export { XPagination } from './pagination';
+export { XSwitch } from './switch';
+export { XTag } from './tag';
+export { XTagInput } from './tag-input';
 
 import { XButton } from './button';
 import { XInput } from './input';
@@ -33,6 +36,9 @@ import { XLoading } from './loading';
 import { XMessage } from './message';
 import { XTree } from './tree';
 import { XPagination } from './pagination';
+import { XSwitch } from './switch';
+import { XTag } from './tag';
+import { XTagInput } from './tag-input';
 
 const components = [
   XButton,
@@ -51,6 +57,9 @@ const components = [
   XCheckboxGroup,
   XTree,
   XPagination,
+  XSwitch,
+  XTag,
+  XTagInput,
 ];
 
 const install = (app: App) => {
@@ -97,6 +106,9 @@ export type {
 } from './message';
 export type { TreeProps, TreeNodeData, TreeKey } from './tree';
 export type { PaginationProps } from './pagination';
+export type { SwitchProps, SwitchSize } from './switch';
+export type { TagProps, TagType, TagEffect, TagSize } from './tag';
+export type { TagInputProps } from './tag-input';
 
 // Dialog 命令式方法导出
 export { confirm, info, success, warning, error } from './dialog';

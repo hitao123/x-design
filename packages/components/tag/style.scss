@@ -1,0 +1,127 @@
+@use '../../theme/src/mixins/tag.scss' as *;
+
+.x-tag {
+  @include tag-base;
+
+  &__content {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  &__close {
+    @include tag-close;
+  }
+
+  // Sizes
+  &--small {
+    @include tag-size(20px, 0 6px, var(--x-font-size-xs), 12px);
+  }
+
+  &--medium {
+    @include tag-size(24px, 0 8px, var(--x-font-size-xs), 14px);
+  }
+
+  &--large {
+    @include tag-size(28px, 0 10px, var(--x-font-size-sm), 14px);
+  }
+
+  // Round
+  &.is-round {
+    border-radius: var(--x-border-radius-round);
+  }
+
+  // ===========================
+  // Light effect (default)
+  // ===========================
+  &--light {
+    &.x-tag--default {
+      @include tag-light(
+        var(--x-tag-default-light-bg),
+        var(--x-tag-default-light-border),
+        var(--x-color-info)
+      );
+    }
+
+    &.x-tag--success {
+      @include tag-light(
+        var(--x-tag-success-light-bg),
+        var(--x-tag-success-light-border),
+        var(--x-color-success)
+      );
+    }
+
+    &.x-tag--info {
+      @include tag-light(
+        var(--x-tag-info-light-bg),
+        var(--x-tag-info-light-border),
+        var(--x-color-info)
+      );
+    }
+
+    &.x-tag--warning {
+      @include tag-light(
+        var(--x-tag-warning-light-bg),
+        var(--x-tag-warning-light-border),
+        var(--x-color-warning)
+      );
+    }
+
+    &.x-tag--danger {
+      @include tag-light(
+        var(--x-tag-danger-light-bg),
+        var(--x-tag-danger-light-border),
+        var(--x-color-danger)
+      );
+    }
+  }
+
+  // ===========================
+  // Dark effect
+  // ===========================
+  &--dark {
+    &.x-tag--default {
+      @include tag-dark(var(--x-color-info));
+    }
+
+    &.x-tag--success {
+      @include tag-dark(var(--x-color-success));
+    }
+
+    &.x-tag--info {
+      @include tag-dark(var(--x-color-info));
+    }
+
+    &.x-tag--warning {
+      @include tag-dark(var(--x-color-warning));
+    }
+
+    &.x-tag--danger {
+      @include tag-dark(var(--x-color-danger));
+    }
+  }
+
+  // ===========================
+  // Plain effect
+  // ===========================
+  &--plain {
+    &.x-tag--default {
+      @include tag-plain(var(--x-color-info));
+    }
+
+    &.x-tag--success {
+      @include tag-plain(var(--x-color-success));
+    }
+
+    &.x-tag--info {
+      @include tag-plain(var(--x-color-info));
+    }
+
+    &.x-tag--warning {
+      @include tag-plain(var(--x-color-warning));
+    }
+
+    &.x-tag--danger {
+      @include tag-plain(var(--x-color-danger));
+    }
+  }
+}

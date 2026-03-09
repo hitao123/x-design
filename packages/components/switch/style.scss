@@ -1,0 +1,95 @@
+@use '../../theme/src/mixins/switch.scss' as *;
+
+.x-switch {
+  @include switch-base;
+
+  &__label {
+    font-size: var(--x-font-size-base);
+    color: var(--x-color-text-regular);
+    transition: color var(--x-transition-duration) var(--x-transition-function);
+
+    &--left {
+      margin-right: var(--x-spacing-sm);
+    }
+
+    &--right {
+      margin-left: var(--x-spacing-sm);
+    }
+  }
+
+  &__input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    margin: 0;
+  }
+
+  &__loading {
+    color: var(--x-switch-off-color);
+    font-size: 12px;
+  }
+
+  // Sizes
+  &--small {
+    .x-switch__core {
+      @include switch-core(28px, 16px);
+    }
+
+    .x-switch__action {
+      @include switch-action(12px, 2px);
+    }
+
+    .x-switch__label {
+      font-size: var(--x-font-size-sm);
+    }
+
+    &.is-checked {
+      @include switch-checked(28px, 12px, 2px);
+    }
+  }
+
+  &--medium {
+    .x-switch__core {
+      @include switch-core(36px, 20px);
+    }
+
+    .x-switch__action {
+      @include switch-action(16px, 2px);
+    }
+
+    &.is-checked {
+      @include switch-checked(36px, 16px, 2px);
+    }
+  }
+
+  &--large {
+    .x-switch__core {
+      @include switch-core(44px, 24px);
+    }
+
+    .x-switch__action {
+      @include switch-action(20px, 2px);
+    }
+
+    .x-switch__label {
+      font-size: var(--x-font-size-lg);
+    }
+
+    &.is-checked {
+      @include switch-checked(44px, 20px, 2px);
+    }
+  }
+
+  // Checked state: update loading icon color
+  &.is-checked {
+    .x-switch__loading {
+      color: var(--x-switch-on-color);
+    }
+  }
+
+  // Disabled
+  &.is-disabled {
+    @include switch-disabled;
+  }
+}

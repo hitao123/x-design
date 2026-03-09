@@ -1,0 +1,69 @@
+// Tag mixins
+
+@mixin tag-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  white-space: nowrap;
+  border: 1px solid;
+  border-radius: var(--x-border-radius-base);
+  font-family: inherit;
+  line-height: 1;
+  cursor: default;
+  transition: background-color var(--x-transition-duration) var(--x-transition-function),
+    border-color var(--x-transition-duration) var(--x-transition-function),
+    color var(--x-transition-duration) var(--x-transition-function);
+}
+
+@mixin tag-size($height, $padding, $font-size, $close-size) {
+  height: $height;
+  padding: $padding;
+  font-size: $font-size;
+
+  .x-tag__close {
+    width: $close-size;
+    height: $close-size;
+    font-size: $close-size;
+  }
+}
+
+@mixin tag-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color var(--x-transition-duration) var(--x-transition-function),
+    color var(--x-transition-duration) var(--x-transition-function);
+
+  &:hover {
+    background-color: currentColor;
+
+    svg {
+      color: #ffffff;
+    }
+  }
+}
+
+// Light effect type colors
+@mixin tag-light($bg, $border, $text) {
+  background-color: $bg;
+  border-color: $border;
+  color: $text;
+}
+
+// Dark effect type colors
+@mixin tag-dark($bg) {
+  background-color: $bg;
+  border-color: $bg;
+  color: #ffffff;
+}
+
+// Plain effect type colors
+@mixin tag-plain($color) {
+  background-color: transparent;
+  border-color: $color;
+  color: $color;
+}

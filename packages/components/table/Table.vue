@@ -3,8 +3,8 @@
     <div v-if="loading" class="x-table__loading">
       <span>加载中...</span>
     </div>
-    <div ref="containerRef" class="x-table__container" :style="containerStyle">
-      <table class="x-table__element" :style="{ tableLayout: props.tableLayout }">
+    <div ref="containerRef" :class="containerClasses" :style="containerStyle">
+      <table class="x-table__element" :style="tableStyle">
         <colgroup>
           <col
             v-for="(column, columnIndex) in columns"
@@ -18,7 +18,7 @@
               v-for="(column, columnIndex) in columns"
               :key="column.prop || columnIndex"
               :class="columnHelpers.getHeaderClass(column)"
-              :style="columnHelpers.getFixedStyle(column)"
+              :style="columnHelpers.getFixedStyle(column, true)"
             >
               <div class="x-table__cell-content">
                 <!-- 选择列 -->
@@ -195,7 +195,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, type VNode } from 'vue';
+import { computed, ref, reactive, onMounted, onBeforeUnmount, nextTick, type VNode } from 'vue';
 import { IconArrowUp, IconArrowDown, IconArrowRight } from '@x-design/icons';
 import { XCheckbox } from '../checkbox';
 import { XPagination } from '../pagination';
@@ -267,6 +267,18 @@ onMounted(() => {
     expand.expandAll(props.data, props.treeProps?.children || 'children');
   }
   filter.initFilteredValues();
+
+  // 初始化滚动状态
+  if (columnHelpers.hasFixedColumns() && containerRef.value) {
+    containerRef.value.addEventListener('scroll', handleScroll);
+    nextTick(() => handleScroll());
+  }
+});
+
+onBeforeUnmount(() => {
+  if (containerRef.value) {
+    containerRef.value.removeEventListener('scroll', handleScroll);
+  }
 });
 
 // 分页
@@ -334,12 +346,43 @@ const containerStyle = computed(() => {
   return style;
 });
 
+// 滚动状态跟踪
+const scrollState = reactive({ left: false, right: false });
+
+const containerClasses = computed(() => [
+  'x-table__container',
+  {
+    'is-scrolling-left': scrollState.left,
+    'is-scrolling-right': scrollState.right,
+  },
+]);
+
+const tableStyle = computed(() => {
+  const style: any = { tableLayout: props.tableLayout };
+  const minWidth = columnHelpers.getTableMinWidth();
+  if (minWidth) {
+    style.minWidth = minWidth;
+  }
+  return style;
+});
+
+const handleScroll = () => {
+  const el = containerRef.value;
+  if (!el) return;
+  const { scrollLeft, scrollWidth, clientWidth } = el;
+  scrollState.left = scrollLeft > 0;
+  scrollState.right = scrollLeft + clientWidth < scrollWidth - 1;
+};
+
 // 行/单元格样式
 const getCellClass = (row: any, column: TableColumn, rowIndex: number, columnIndex: number) => {
   const classes: any[] = [
     'x-table__cell',
     column.align ? `x-table__cell--${column.align}` : '',
-    { 'is-fixed': column.fixed },
+    {
+      'is-fixed-left': column.fixed === 'left',
+      'is-fixed-right': column.fixed === 'right',
+    },
   ];
   if (typeof props.cellClassName === 'function') {
     const c = props.cellClassName(row, column, rowIndex, columnIndex);

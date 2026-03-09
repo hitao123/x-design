@@ -1,0 +1,51 @@
+// Switch mixins
+
+@mixin switch-base {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+@mixin switch-core($width, $height) {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: $width;
+  height: $height;
+  border-radius: calc($height / 2);
+  background-color: var(--x-switch-off-color);
+  transition: background-color var(--x-transition-duration) var(--x-transition-function);
+  flex-shrink: 0;
+}
+
+@mixin switch-action($dot-size, $offset) {
+  position: absolute;
+  left: $offset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $dot-size;
+  height: $dot-size;
+  border-radius: 50%;
+  background-color: var(--x-color-white);
+  transition: left var(--x-transition-duration) var(--x-transition-function);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+@mixin switch-checked($width, $dot-size, $offset) {
+  .x-switch__core {
+    background-color: var(--x-switch-on-color);
+  }
+
+  .x-switch__action {
+    left: calc($width - $dot-size - $offset);
+  }
+}
+
+@mixin switch-disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

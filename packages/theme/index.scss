@@ -160,4 +160,20 @@
   --x-tree-node-height: 28px;
   --x-tree-hover-bg: #f5f7fa;
   --x-tree-current-bg: #ecf5ff;
+
+  // Tag 特定变量
+  --x-tag-default-light-bg: var(--x-color-info-light-9);
+  --x-tag-default-light-border: var(--x-color-info-light-8);
+  --x-tag-success-light-bg: #f0f9eb;
+  --x-tag-success-light-border: #e1f3d8;
+  --x-tag-info-light-bg: var(--x-color-info-light-9);
+  --x-tag-info-light-border: var(--x-color-info-light-8);
+  --x-tag-warning-light-bg: #fdf6ec;
+  --x-tag-warning-light-border: #faecd8;
+  --x-tag-danger-light-bg: #fef0f0;
+  --x-tag-danger-light-border: #fde2e2;
+
+  // Switch 特定变量
+  --x-switch-on-color: var(--x-color-primary);
+  --x-switch-off-color: var(--x-border-color-base);
 }

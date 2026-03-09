@@ -58,7 +58,8 @@
 .x-table__header {
   @include table-header;
 
-  th.is-fixed {
+  th.is-fixed-left,
+  th.is-fixed-right {
     z-index: 4;
   }
 }
@@ -94,7 +95,8 @@
     text-align: right;
   }
 
-  &.is-fixed {
+  &.is-fixed-left,
+  &.is-fixed-right {
     background-color: var(--x-bg-color, #fff);
   }
 
@@ -198,32 +200,45 @@
   gap: 4px;
 }
 
-// 固定列滚动阴影
-.x-table__cell.is-fixed {
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 10px;
-    pointer-events: none;
-    transition: box-shadow 0.3s;
-  }
+// 固定列滚动阴影（直接使用 cell 的 box-shadow，避免 ::after 被 table cell overflow 裁剪）
+.x-table__cell.is-fixed-left,
+.x-table__cell.is-fixed-right {
+  transition: box-shadow 0.3s;
 }
 
-.x-table__container.is-scrolling {
-  .x-table__cell.is-fixed[style*="left"] {
-    &::after {
-      right: -10px;
-      box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.12);
-    }
-  }
-  .x-table__cell.is-fixed[style*="right"] {
-    &::after {
-      left: -10px;
-      box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.12);
-    }
-  }
+.x-table__container.is-scrolling-right .x-table__cell.is-fixed-left {
+  box-shadow: 2px 0 8px -2px rgba(0, 0, 0, 0.12);
+}
+
+.x-table__container.is-scrolling-left .x-table__cell.is-fixed-right {
+  box-shadow: -2px 0 8px -2px rgba(0, 0, 0, 0.12);
+}
+
+// 表头固定列背景色覆盖（必须在 .x-table__cell.is-fixed-* 之后，确保 header bg 不被白色覆盖）
+.x-table__header th.x-table__cell.is-fixed-left,
+.x-table__header th.x-table__cell.is-fixed-right {
+  background-color: var(--x-table-header-bg, #fafafa);
+}
+
+// 固定列 hover / stripe / current / selected 背景色覆盖
+.x-table__body tr:hover td.x-table__cell.is-fixed-left,
+.x-table__body tr:hover td.x-table__cell.is-fixed-right {
+  background-color: var(--x-table-hover-bg, #f2f6fc);
+}
+
+.x-table--stripe .x-table__row--striped td.x-table__cell.is-fixed-left,
+.x-table--stripe .x-table__row--striped td.x-table__cell.is-fixed-right {
+  background-color: var(--x-table-stripe-bg, #f5f7fa);
+}
+
+.x-table__row--current td.x-table__cell.is-fixed-left,
+.x-table__row--current td.x-table__cell.is-fixed-right {
+  background-color: var(--x-table-current-row-bg, #ecf5ff);
+}
+
+.x-table__row--selected td.x-table__cell.is-fixed-left,
+.x-table__row--selected td.x-table__cell.is-fixed-right {
+  background-color: var(--x-color-primary-light-9, #ecf5ff);
 }
 
 // 筛选相关
