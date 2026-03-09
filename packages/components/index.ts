@@ -16,6 +16,7 @@ export { XCheckbox, XCheckboxGroup } from './checkbox';
 export { XLoading, vLoading, loadingService } from './loading';
 export { XMessage } from './message';
 export { XTree } from './tree';
+export { XPagination } from './pagination';
 
 import { XButton } from './button';
 import { XInput } from './input';
@@ -31,6 +32,7 @@ import { XCheckbox, XCheckboxGroup } from './checkbox';
 import { XLoading } from './loading';
 import { XMessage } from './message';
 import { XTree } from './tree';
+import { XPagination } from './pagination';
 
 const components = [
   XButton,
@@ -48,6 +50,7 @@ const components = [
   XCheckbox,
   XCheckboxGroup,
   XTree,
+  XPagination,
 ];
 
 const install = (app: App) => {
@@ -69,7 +72,14 @@ export default {
 export type { ButtonProps } from './button';
 export type { InputProps, InputAutoSize } from './input';
 export type { SelectProps, SelectOption } from './select';
-export type { TableProps, TableColumn, SortState, SortOrder, FilterState, TablePagination } from './table';
+export type {
+  TableProps,
+  TableColumn,
+  SortState,
+  SortOrder,
+  FilterState,
+  TablePagination,
+} from './table';
 export type { DialogProps, DialogConfirmOptions, DialogMethods, DialogMethodType } from './dialog';
 export type { TooltipProps } from './tooltip';
 export type { PopconfirmProps } from './popconfirm';
@@ -78,8 +88,15 @@ export type { ConfigProviderProps } from './config-provider';
 export type { RadioProps, RadioGroupProps, RadioValue } from './radio';
 export type { CheckboxProps, CheckboxGroupProps, CheckboxValue } from './checkbox';
 export type { LoadingOptions, LoadingInstance } from './loading';
-export type { MessageOptions, MessageProps, MessageType, MessageInstance, MessageApi } from './message';
+export type {
+  MessageOptions,
+  MessageProps,
+  MessageType,
+  MessageInstance,
+  MessageApi,
+} from './message';
 export type { TreeProps, TreeNodeData, TreeKey } from './tree';
+export type { PaginationProps } from './pagination';
 
 // Dialog 命令式方法导出
 export { confirm, info, success, warning, error } from './dialog';

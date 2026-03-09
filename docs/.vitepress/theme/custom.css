@@ -42,7 +42,7 @@
 
 .vp-doc .x-table th,
 .vp-doc .x-table td {
-  border: none;
+  border-bottom: 1px solid var(--x-table-border-color, #ebeef5);
   padding: 0;
 }
 

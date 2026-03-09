@@ -7,6 +7,12 @@ export interface FormProps {
   disabled?: boolean;
   /** Form 级别默认校验触发方式 */
   validateTrigger?: 'blur' | 'change';
+  /** 标签后缀，如冒号 */
+  labelSuffix?: string;
+  /** 是否隐藏必填星号 */
+  hideRequiredAsterisk?: boolean;
+  /** 组件尺寸 */
+  size?: 'small' | 'medium' | 'large';
 }
 
 export interface FormItemProps {
@@ -17,6 +23,10 @@ export interface FormItemProps {
   error?: string;
   /** 覆盖 Form 级别的 rules */
   rules?: FormItemRule | FormItemRule[];
+  /** 是否显示校验错误信息，默认 true */
+  showMessage?: boolean;
+  /** 是否以行内形式展示校验信息 */
+  inlineMessage?: boolean;
 }
 
 export interface FormItemRule {
@@ -33,23 +43,47 @@ export interface FormItemRule {
   /** 正则表达式 */
   pattern?: RegExp | string;
   /** 内置校验类型（基于 async-validator） */
-  type?: 'string' | 'number' | 'boolean' | 'integer' | 'float' | 'array'
-    | 'object' | 'enum' | 'date' | 'url' | 'email' | 'any';
+  type?:
+    | 'string'
+    | 'number'
+    | 'boolean'
+    | 'integer'
+    | 'float'
+    | 'array'
+    | 'object'
+    | 'enum'
+    | 'date'
+    | 'url'
+    | 'email'
+    | 'any';
   /** 枚举值（配合 type: 'enum' 使用） */
   enum?: any[];
   /** 字段数组长度 */
   len?: number;
   /** 自定义校验器（支持 Promise） */
-  validator?: (rule: FormItemRule, value: any, callback: (error?: Error) => void) => void | Promise<void>;
+  validator?: (
+    rule: FormItemRule,
+    value: any,
+    callback: (error?: Error) => void
+  ) => void | Promise<void>;
   /** 是否忽略空白字符 */
   whitespace?: boolean;
 }
 
+export interface FormContext {
+  props: FormProps;
+  addField: (field: FormItemContext) => void;
+  removeField: (field: FormItemContext) => void;
+}
+
 export interface FormInstance {
-  validate: (callback?: (valid: boolean, fields?: Record<string, any>) => void) => Promise<boolean>;
+  validate: (
+    callback?: (valid: boolean, fields?: Record<string, string[]>) => void
+  ) => Promise<boolean>;
   validateField: (prop: string | string[], callback?: (valid: boolean) => void) => Promise<boolean>;
   resetFields: (props?: string | string[]) => void;
   clearValidate: (props?: string | string[]) => void;
+  scrollToField: (prop: string) => void;
 }
 
 export interface FormItemContext {
@@ -57,4 +91,6 @@ export interface FormItemContext {
   validate: (trigger?: string) => Promise<boolean>;
   resetField: () => void;
   clearValidate: () => void;
+  /** FormItem 根元素引用，用于 scrollToField */
+  el?: HTMLElement;
 }

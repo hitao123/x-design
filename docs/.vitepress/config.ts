@@ -55,6 +55,7 @@ export default defineConfig({
           text: '数据展示',
           items: [
             { text: 'Table 表格', link: '/components/table' },
+            { text: 'Pagination 分页', link: '/components/pagination' },
             { text: 'Tree 树形控件', link: '/components/tree' },
             { text: 'Tooltip 文字提示', link: '/components/tooltip' },
           ],

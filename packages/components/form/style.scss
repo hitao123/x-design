@@ -47,6 +47,9 @@
       :deep(.x-textarea__inner) {
         border-color: var(--x-color-danger);
       }
+      :deep(.x-select__input-wrapper) {
+        border-color: var(--x-color-danger);
+      }
     }
   }
 }
@@ -69,6 +72,13 @@
 
 .x-form-item__error {
   @include form-item-error;
+
+  &--inline {
+    position: relative;
+    display: inline-block;
+    margin-left: var(--x-spacing-sm);
+    padding-top: 0;
+  }
 }
 
 // Animations

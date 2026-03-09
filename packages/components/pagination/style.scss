@@ -1,0 +1,65 @@
+@use '../../theme/src/mixins/pagination.scss' as *;
+
+.x-pagination {
+  @include pagination-base;
+
+  &--small {
+    @include pagination-small;
+  }
+
+  &.is-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    .x-pagination__btn,
+    .x-pagination__number {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.x-pagination__total {
+  margin-right: 4px;
+}
+
+.x-pagination__sizes {
+  .x-select {
+    width: 110px;
+  }
+}
+
+.x-pagination__btn {
+  @include pagination-btn;
+}
+
+.x-pagination__pager {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li + li {
+    margin-top: 0;
+  }
+}
+
+.x-pagination__number {
+  @include pagination-number;
+}
+
+.x-pagination__jumper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 4px;
+}
+
+.x-pagination__editor {
+  width: 50px;
+
+  .x-input__inner {
+    text-align: center;
+  }
+}

@@ -10,13 +10,13 @@
 @mixin table-container {
   overflow: auto;
   position: relative;
-  border: 1px solid var(--x-table-border-color, #ebeef5);
   border-radius: var(--x-border-radius-base, 4px);
 }
 
 @mixin table-element {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background-color: var(--x-bg-color, #fff);
 }
 
@@ -27,6 +27,10 @@
   font-size: var(--x-font-size-base, 14px);
 
   th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background-color: var(--x-table-header-bg, #fafafa);
     border-bottom: 1px solid var(--x-table-border-color, #ebeef5);
   }
 }
@@ -35,8 +39,8 @@
   tr {
     transition: background-color 0.25s ease;
 
-    &:hover {
-      background-color: var(--x-table-hover-bg, #fafafa);
+    &:hover td {
+      background-color: var(--x-table-hover-bg, #f2f6fc);
     }
 
     &:last-child td {
@@ -46,7 +50,9 @@
 }
 
 @mixin table-row {
-  transition: background-color var(--x-transition-duration, 0.3s) var(--x-transition-function, ease);
+  td {
+    transition: background-color var(--x-transition-duration, 0.3s) var(--x-transition-function, ease);
+  }
 }
 
 @mixin table-cell {
@@ -70,6 +76,7 @@
 @mixin table-border {
   .x-table__container {
     border-radius: var(--x-border-radius-base, 4px);
+    border: 1px solid var(--x-table-border-color, #ebeef5);
   }
 
   .x-table__element {

@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { computed, provide, reactive } from 'vue';
-import type { FormProps, FormItemContext } from './types';
+import type { FormProps, FormContext, FormItemContext } from './types';
 
 defineOptions({
   name: 'XForm',
@@ -19,6 +19,9 @@ const props = withDefaults(defineProps<FormProps>(), {
   inline: false,
   disabled: false,
   validateTrigger: 'change',
+  labelSuffix: '',
+  hideRequiredAsterisk: false,
+  size: 'medium',
 });
 
 const formClasses = computed(() => [
@@ -48,19 +51,40 @@ const getFilteredFields = (props?: string | string[]): FormItemContext[] => {
   return fields.filter((f) => propsArray.includes(f.prop));
 };
 
-const validate = async (callback?: (valid: boolean, fields?: Record<string, any>) => void): Promise<boolean> => {
-  const promises = fields.map((field) => field.validate());
-  try {
-    await Promise.all(promises);
+const validate = async (
+  callback?: (valid: boolean, fields?: Record<string, string[]>) => void
+): Promise<boolean> => {
+  const results = await Promise.allSettled(fields.map((field) => field.validate()));
+
+  const errorMap: Record<string, string[]> = {};
+  let isValid = true;
+
+  results.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      isValid = false;
+      const prop = fields[index].prop;
+      const message =
+        result.reason instanceof Error ? result.reason.message : String(result.reason);
+      if (!errorMap[prop]) {
+        errorMap[prop] = [];
+      }
+      errorMap[prop].push(message);
+    }
+  });
+
+  if (isValid) {
     callback?.(true);
     return true;
-  } catch (errors) {
-    callback?.(false, errors as any);
-    return false;
+  } else {
+    callback?.(false, errorMap);
+    return Promise.reject(errorMap);
   }
 };
 
-const validateField = async (prop: string | string[], callback?: (valid: boolean) => void): Promise<boolean> => {
+const validateField = async (
+  prop: string | string[],
+  callback?: (valid: boolean) => void
+): Promise<boolean> => {
   const targetFields = getFilteredFields(prop);
   if (targetFields.length === 0) {
     callback?.(true);
@@ -86,7 +110,14 @@ const clearValidate = (props?: string | string[]) => {
   targetFields.forEach((field) => field.clearValidate());
 };
 
-provide('xForm', {
+const scrollToField = (prop: string) => {
+  const targetField = fields.find((f) => f.prop === prop);
+  if (targetField?.el) {
+    targetField.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+};
+
+provide<FormContext>('xForm', {
   props,
   addField,
   removeField,
@@ -97,6 +128,7 @@ defineExpose({
   validateField,
   resetFields,
   clearValidate,
+  scrollToField,
 });
 </script>
 

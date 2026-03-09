@@ -20,8 +20,8 @@
   }
 
   &--stripe {
-    .x-table__row--striped {
-      background-color: var(--x-table-stripe-bg, #fafafa);
+    .x-table__row--striped td {
+      background-color: var(--x-table-stripe-bg, #f5f7fa);
     }
   }
 
@@ -36,6 +36,7 @@
 
 .x-table__container {
   @include table-container;
+  border: 1px solid var(--x-table-border-color, #ebeef5);
 }
 
 .x-table__element {
@@ -52,11 +53,14 @@
 
 .x-table tr {
   border-top: none;
-  background-color: transparent;
 }
 
 .x-table__header {
   @include table-header;
+
+  th.is-fixed {
+    z-index: 4;
+  }
 }
 
 .x-table__body {
@@ -66,11 +70,11 @@
 .x-table__row {
   @include table-row;
 
-  &--current {
+  &--current td {
     background-color: var(--x-table-current-row-bg, #ecf5ff);
   }
 
-  &--selected {
+  &--selected td {
     background-color: var(--x-color-primary-light-9, #ecf5ff);
   }
 }
@@ -91,7 +95,7 @@
   }
 
   &.is-fixed {
-    background-color: inherit;
+    background-color: var(--x-bg-color, #fff);
   }
 
   &.is-sortable {
@@ -194,18 +198,8 @@
   gap: 4px;
 }
 
-// 复选框样式
-input[type="checkbox"] {
-  cursor: pointer;
-  width: 16px;
-  height: 16px;
-  accent-color: var(--x-color-primary);
-}
-
 // 固定列滚动阴影
 .x-table__cell.is-fixed {
-  background-color: inherit;
-
   &::after {
     content: '';
     position: absolute;
@@ -334,44 +328,4 @@ input[type="checkbox"] {
   align-items: center;
   justify-content: flex-end;
   padding: 12px 0;
-  gap: 12px;
-  font-size: var(--x-font-size-sm);
-}
-
-.x-table__pagination-total {
-  color: var(--x-text-color-regular);
-}
-
-.x-table__pagination-pager {
-  display: flex;
-  gap: 4px;
-}
-
-.x-table__pagination-btn {
-  min-width: 28px;
-  height: 28px;
-  padding: 0 6px;
-  border: 1px solid var(--x-border-color);
-  border-radius: var(--x-border-radius-small);
-  background: var(--x-bg-color);
-  color: var(--x-text-color-regular);
-  cursor: pointer;
-  font-size: var(--x-font-size-sm);
-  transition: all var(--x-transition-duration);
-
-  &:hover:not(:disabled) {
-    color: var(--x-color-primary);
-    border-color: var(--x-color-primary);
-  }
-
-  &.is-active {
-    background: var(--x-color-primary);
-    color: #fff;
-    border-color: var(--x-color-primary);
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
 }

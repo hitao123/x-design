@@ -6,7 +6,7 @@
       class="x-textarea__inner"
       :value="modelValue"
       :placeholder="placeholder"
-      :disabled="disabled"
+      :disabled="isDisabled"
       :readonly="readonly"
       :maxlength="maxlength"
       :rows="props.rows"
@@ -37,7 +37,7 @@
         :type="inputType"
         :value="modelValue"
         :placeholder="placeholder"
-        :disabled="disabled"
+        :disabled="isDisabled"
         :readonly="readonly"
         :maxlength="maxlength"
         @input="handleInput"
@@ -104,7 +104,9 @@ const emit = defineEmits<{
 }>();
 
 const slots = useSlots();
-const { validateState } = useFormItem();
+const { validateState, isFormDisabled, triggerValidation } = useFormItem();
+
+const isDisabled = computed(() => props.disabled || isFormDisabled.value);
 
 const inputRef = ref<HTMLInputElement>();
 const textareaRef = ref<HTMLTextAreaElement>();
@@ -126,7 +128,7 @@ const isWordLimitVisible = computed(() => {
   return (
     props.showWordLimit &&
     props.maxlength !== undefined &&
-    !props.disabled &&
+    !isDisabled.value &&
     !props.readonly &&
     !props.showPassword
   );
@@ -135,7 +137,7 @@ const isWordLimitVisible = computed(() => {
 const showClearIcon = computed(() => {
   return (
     props.clearable &&
-    !props.disabled &&
+    !isDisabled.value &&
     !props.readonly &&
     textLength.value > 0 &&
     (isFocused.value || hovering.value)
@@ -143,7 +145,7 @@ const showClearIcon = computed(() => {
 });
 
 const showPasswordToggle = computed(() => {
-  return props.showPassword && !props.disabled && !props.readonly;
+  return props.showPassword && !isDisabled.value && !props.readonly;
 });
 
 const hasPrefix = computed(() => {
@@ -164,7 +166,7 @@ const wrapperClasses = computed(() => [
   'x-input',
   `x-input--${props.size}`,
   {
-    'is-disabled': props.disabled,
+    'is-disabled': isDisabled.value,
     'x-input--prefix': hasPrefix.value,
     'x-input--suffix': suffixVisible.value,
   },
@@ -181,7 +183,7 @@ const innerWrapperClasses = computed(() => [
 const textareaClasses = computed(() => [
   'x-textarea',
   {
-    'is-disabled': props.disabled,
+    'is-disabled': isDisabled.value,
     'is-focused': isFocused.value,
   },
 ]);
@@ -269,6 +271,7 @@ const handleFocus = (event: FocusEvent) => {
 const handleBlur = (event: FocusEvent) => {
   isFocused.value = false;
   emit('blur', event);
+  triggerValidation('blur');
 };
 
 const handleClear = () => {
@@ -282,7 +285,7 @@ const handleClear = () => {
 };
 
 const handleWrapperClick = () => {
-  if (props.disabled) return;
+  if (isDisabled.value) return;
   inputRef.value?.focus();
 };
 

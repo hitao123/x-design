@@ -1,6 +1,16 @@
 import type { TableColumn } from '../types';
 
 /**
+ * 解析列宽为数字（px）
+ */
+function parseColumnWidth(width: string | number | undefined): number {
+  if (width === undefined) return 0;
+  if (typeof width === 'number') return width;
+  const num = parseFloat(width);
+  return isNaN(num) ? 0 : num;
+}
+
+/**
  * Table 列配置处理 composable
  */
 export function useColumns(columns: () => TableColumn[]) {
@@ -21,14 +31,36 @@ export function useColumns(columns: () => TableColumn[]) {
 
   /**
    * 固定列的 sticky 定位样式（仅用于 th/td）
+   * 计算累计偏移量，使多个固定列不重叠
    */
   const getFixedStyle = (column: TableColumn) => {
     if (!column.fixed) return undefined;
+    const cols = columns();
     const style: any = {
       position: 'sticky',
       zIndex: 1,
     };
-    style[column.fixed] = 0;
+
+    if (column.fixed === 'left') {
+      let offset = 0;
+      for (const col of cols) {
+        if (col === column) break;
+        if (col.fixed === 'left') {
+          offset += parseColumnWidth(col.width);
+        }
+      }
+      style.left = `${offset}px`;
+    } else if (column.fixed === 'right') {
+      let offset = 0;
+      const colIndex = cols.indexOf(column);
+      for (let i = cols.length - 1; i > colIndex; i--) {
+        if (cols[i].fixed === 'right') {
+          offset += parseColumnWidth(cols[i].width);
+        }
+      }
+      style.right = `${offset}px`;
+    }
+
     return style;
   };
 

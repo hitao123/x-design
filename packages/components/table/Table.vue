@@ -23,9 +23,8 @@
               <div class="x-table__cell-content">
                 <!-- 选择列 -->
                 <template v-if="column.type === 'selection'">
-                  <input
-                    type="checkbox"
-                    :checked="selection.isAllSelected.value"
+                  <XCheckbox
+                    :model-value="selection.isAllSelected.value"
                     :indeterminate="selection.isIndeterminate.value"
                     @change="onSelectAll"
                   />
@@ -90,10 +89,9 @@
               >
                 <!-- 选择列 -->
                 <template v-if="column.type === 'selection'">
-                  <input
-                    type="checkbox"
-                    :checked="selection.isRowSelected(row)"
-                    @change="onSelectRow(row)"
+                  <XCheckbox
+                    :model-value="selection.isRowSelected(row)"
+                    @change="() => onSelectRow(row)"
                     @click.stop
                   />
                 </template>
@@ -180,39 +178,27 @@
     </div>
     <!-- 分页 -->
     <div v-if="pagination" class="x-table__pagination">
-      <span class="x-table__pagination-total">共 {{ paginationTotal }} 条</span>
-      <div class="x-table__pagination-pager">
-        <button
-          class="x-table__pagination-btn"
-          :disabled="currentPage <= 1"
-          @click="handlePageChange(currentPage - 1)"
-        >
-          <IconArrowLeft />
-        </button>
-        <button
-          v-for="page in pageList"
-          :key="page"
-          class="x-table__pagination-btn"
-          :class="{ 'is-active': page === currentPage }"
-          @click="handlePageChange(page)"
-        >
-          {{ page }}
-        </button>
-        <button
-          class="x-table__pagination-btn"
-          :disabled="currentPage >= totalPages"
-          @click="handlePageChange(currentPage + 1)"
-        >
-          <IconArrowRight />
-        </button>
-      </div>
+      <XPagination
+        :current="currentPage"
+        :page-size="pageSize"
+        :total="paginationTotal"
+        :page-sizes="(pagination as any).pageSizes"
+        :layout="(pagination as any).layout || 'total, prev, pager, next'"
+        :small="(pagination as any).small"
+        :pager-count="(pagination as any).pagerCount"
+        :disabled="(pagination as any).disabled"
+        @current-change="handlePageChange"
+        @size-change="handlePageSizeChange"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, onMounted, h, type VNode } from 'vue';
-import { IconArrowUp, IconArrowDown, IconArrowRight, IconArrowLeft } from '@x-design/icons';
+import { computed, ref, onMounted, type VNode } from 'vue';
+import { IconArrowUp, IconArrowDown, IconArrowRight } from '@x-design/icons';
+import { XCheckbox } from '../checkbox';
+import { XPagination } from '../pagination';
 import type { TableProps, TableColumn, SortOrder } from './types';
 import { useSelection } from './composables/useSelection';
 import { useSorter } from './composables/useSorter';
@@ -299,19 +285,6 @@ const paginationTotal = computed(() => {
 });
 
 const totalPages = computed(() => Math.max(1, Math.ceil(paginationTotal.value / pageSize.value)));
-
-const pageList = computed(() => {
-  const pages: number[] = [];
-  const total = totalPages.value;
-  const current = currentPage.value;
-  const delta = 2;
-  const start = Math.max(1, current - delta);
-  const end = Math.min(total, current + delta);
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-  return pages;
-});
 
 // 显示数据管线：过滤 -> 树形展开 -> 分页
 const displayData = computed(() => {
@@ -409,8 +382,7 @@ const handleRowClick = (row: any, index: number) => {
   emit('rowClick', row, index);
 };
 
-const onSelectAll = (event: Event) => {
-  const checked = (event.target as HTMLInputElement).checked;
+const onSelectAll = (checked: boolean) => {
   selection.handleSelectAll(checked);
   emit('selectionChange', selection.selectedRows.value);
 };
@@ -438,6 +410,12 @@ const onFilter = (prop: string, values: any[]) => {
 const handlePageChange = (page: number) => {
   if (page < 1 || page > totalPages.value) return;
   currentPage.value = page;
+  emit('paginationChange', currentPage.value, pageSize.value);
+};
+
+const handlePageSizeChange = (size: number) => {
+  pageSize.value = size;
+  currentPage.value = 1;
   emit('paginationChange', currentPage.value, pageSize.value);
 };
 

@@ -7,9 +7,14 @@ import { ref } from 'vue';
 import { XTable } from '@x-design/components';
 
 const tableData = ref([
-  { id: 1, name: '张三', age: 28, address: '北京市朝阳区' },
-  { id: 2, name: '李四', age: 32, address: '上海市浦东新区' },
-  { id: 3, name: '王五', age: 25, address: '广州市天河区' },
+  { id: 1, name: '张三', age: 28, address: '北京市朝阳区', phone: '13800001111', email: 'zhangsan@example.com' },
+  { id: 2, name: '李四', age: 32, address: '上海市浦东新区', phone: '13800002222', email: 'lisi@example.com' },
+  { id: 3, name: '王五', age: 25, address: '广州市天河区', phone: '13800003333', email: 'wangwu@example.com' },
+  { id: 4, name: '赵六', age: 30, address: '深圳市南山区', phone: '13800004444', email: 'zhaoliu@example.com' },
+  { id: 5, name: '孙七', age: 27, address: '杭州市西湖区', phone: '13800005555', email: 'sunqi@example.com' },
+  { id: 6, name: '周八', age: 35, address: '成都市武侯区', phone: '13800006666', email: 'zhouba@example.com' },
+  { id: 7, name: '吴九', age: 29, address: '南京市鼓楼区', phone: '13800007777', email: 'wujiu@example.com' },
+  { id: 8, name: '郑十', age: 33, address: '武汉市江汉区', phone: '13800008888', email: 'zhengshi@example.com' },
 ]);
 
 const columns = [
@@ -110,6 +115,24 @@ const customHeaderColumns = [
   { prop: 'name', label: '姓名', slots: { header: 'nameHeader' } },
   { prop: 'age', label: '年龄' },
 ];
+
+// 分页 Demo
+const paginationData = ref([]);
+for (let i = 1; i <= 50; i++) {
+  paginationData.value.push({
+    id: i,
+    name: `用户 ${i}`,
+    age: 20 + (i % 30),
+    address: ['北京市朝阳区', '上海市浦东新区', '广州市天河区', '深圳市南山区', '杭州市西湖区'][i % 5],
+  });
+}
+
+const paginationColumns = [
+  { prop: 'id', label: 'ID', width: 80 },
+  { prop: 'name', label: '姓名', width: 120 },
+  { prop: 'age', label: '年龄', width: 80 },
+  { prop: 'address', label: '地址' },
+];
 </script>
 
 ## 基础用法
@@ -146,7 +169,7 @@ const columns = [
 
 ## 带边框表格
 
-设置 `border` 属性显示边框。
+设置 `border` 属性显示列边框。
 
 <div class="demo-block">
   <XTable :data="tableData" :columns="columns" border />
@@ -168,14 +191,26 @@ const columns = [
 <XTable :data="tableData" :columns="columns" stripe />
 ```
 
+## 斑马纹 + 边框组合
+
+`stripe` 和 `border` 可以同时使用。
+
+<div class="demo-block">
+  <XTable :data="tableData" :columns="columns" stripe border />
+</div>
+
+```vue
+<XTable :data="tableData" :columns="columns" stripe border />
+```
+
 ## 带选择框
 
 添加 `type="selection"` 的列即可实现多选功能。
 
 <div class="demo-block">
-  <XTable 
-    :data="tableData" 
-    :columns="columnsWithSelection" 
+  <XTable
+    :data="tableData"
+    :columns="columnsWithSelection"
     row-key="id"
     @selection-change="handleSelectionChange"
   />
@@ -183,9 +218,9 @@ const columns = [
 
 ```vue
 <template>
-  <XTable 
-    :data="tableData" 
-    :columns="columns" 
+  <XTable
+    :data="tableData"
+    :columns="columns"
     row-key="id"
     @selection-change="handleSelectionChange"
   />
@@ -209,8 +244,8 @@ const handleSelectionChange = (selection) => {
 在列中设置 `sortable` 属性即可实现该列的排序。
 
 <div class="demo-block">
-  <XTable 
-    :data="tableData" 
+  <XTable
+    :data="tableData"
     :columns="sortableColumns"
     @sort-change="handleSortChange"
   />
@@ -218,8 +253,8 @@ const handleSelectionChange = (selection) => {
 
 ```vue
 <template>
-  <XTable 
-    :data="tableData" 
+  <XTable
+    :data="tableData"
     :columns="columns"
     @sort-change="handleSortChange"
   />
@@ -308,8 +343,8 @@ const columns = [
 支持树形数据的显示。
 
 <div class="demo-block">
-  <XTable 
-    :data="treeData" 
+  <XTable
+    :data="treeData"
     :columns="treeColumns"
     row-key="id"
     :tree-props="{ children: 'children' }"
@@ -318,8 +353,8 @@ const columns = [
 
 ```vue
 <template>
-  <XTable 
-    :data="treeData" 
+  <XTable
+    :data="treeData"
     :columns="columns"
     row-key="id"
     :tree-props="{ children: 'children' }"
@@ -346,7 +381,7 @@ const columns = [
 
 ## 固定列
 
-固定列需要使用 `fixed` 属性，它接受 `left` 或 `right`。
+固定列需要使用 `fixed` 属性，它接受 `left` 或 `right`。多个固定列会按累计宽度偏移，不会重叠。
 
 <div class="demo-block">
   <XTable :data="tableData" :columns="fixedColumns" border style="width: 800px;" />
@@ -358,23 +393,26 @@ const columns = [
 <script setup>
 const columns = [
   { prop: 'id', label: 'ID', width: 80, fixed: 'left' },
-  { prop: 'name', label: '姓名', fixed: 'left' },
+  { prop: 'name', label: '姓名', width: 120, fixed: 'left' },
+  { prop: 'age', label: '年龄', width: 100 },
   { prop: 'address', label: '地址', width: 300 },
-  { prop: 'actions', label: '操作', fixed: 'right' },
+  { prop: 'phone', label: '电话', width: 150 },
+  { prop: 'email', label: '邮箱', width: 200 },
+  { prop: 'actions', label: '操作', width: 150, fixed: 'right' },
 ];
 </script>
 ```
 
 ## 固定表头
 
-设置 `height` 或 `max-height` 属性即可实现固定表头。
+设置 `height` 或 `max-height` 属性即可实现固定表头。滚动时表头保持在顶部。
 
 <div class="demo-block">
-  <XTable :data="tableData" :columns="columns" height="200px" border />
+  <XTable :data="tableData" :columns="columns" height="250px" border />
 </div>
 
 ```vue
-<XTable :data="tableData" :columns="columns" height="200px" border />
+<XTable :data="tableData" :columns="columns" height="250px" border />
 ```
 
 ## 自定义表头
@@ -405,15 +443,42 @@ const columns = [
 </script>
 ```
 
+## 分页
+
+通过 `pagination` 属性配置内置分页。
+
+<div class="demo-block">
+  <XTable
+    :data="paginationData"
+    :columns="paginationColumns"
+    :pagination="{ pageSize: 10 }"
+  />
+</div>
+
+```vue
+<template>
+  <XTable
+    :data="tableData"
+    :columns="columns"
+    :pagination="{ pageSize: 10 }"
+  />
+</template>
+
+<script setup>
+// 50 条数据，每页 10 条
+const tableData = ref([...]);
+</script>
+```
+
 ## API
 
-### Props
+### Table Props
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | data | 表格数据 | `any[]` | `[]` |
 | columns | 列配置 | `TableColumn[]` | `[]` |
-| border | 是否显示边框 | `boolean` | `false` |
+| border | 是否显示列边框 | `boolean` | `false` |
 | stripe | 是否显示斑马纹 | `boolean` | `false` |
 | size | 表格尺寸 | `'small' \| 'medium' \| 'large'` | `'medium'` |
 | show-header | 是否显示表头 | `boolean` | `true` |
@@ -429,6 +494,7 @@ const columns = [
 | expand-row-keys | 展开行的 key 数组 | `(string \| number)[]` | - |
 | default-expand-all | 是否默认展开所有行（树形数据） | `boolean` | `false` |
 | tree-props | 树形数据配置 | `{ children?: string, hasChildren?: string }` | - |
+| pagination | 分页配置 | `TablePagination \| false` | - |
 
 ### TableColumn
 
@@ -445,7 +511,7 @@ const columns = [
 | formatter | 格式化函数 | `(row, column, cellValue, index) => any` | - |
 | slots | 自定义插槽 | `{ default?: string, header?: string }` | - |
 
-### Events
+### Table Events
 
 | 事件名 | 说明 | 类型 |
 | --- | --- | --- |
@@ -453,8 +519,9 @@ const columns = [
 | selection-change | 选择项变化事件 | `(selection: any[]) => void` |
 | sort-change | 排序变化事件 | `({ prop: string, order: SortOrder }) => void` |
 | expand-change | 展开行变化事件 | `(row: any, expanded: boolean) => void` |
+| pagination-change | 分页变化事件 | `(current: number, pageSize: number) => void` |
 
-### Methods
+### Table Methods
 
 | 方法名 | 说明 | 类型 |
 | --- | --- | --- |
@@ -464,7 +531,7 @@ const columns = [
 | clearSort | 清空排序 | `() => void` |
 | sort | 设置排序 | `(prop: string, order: SortOrder) => void` |
 
-### Slots
+### Table Slots
 
 | 插槽名 | 说明 | 参数 |
 | --- | --- | --- |

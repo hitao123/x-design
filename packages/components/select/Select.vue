@@ -35,7 +35,7 @@
         v-model="displayValue"
         :class="inputClasses"
         :placeholder="currentPlaceholder"
-        :disabled="disabled"
+        :disabled="isDisabled"
         :readonly="!filterable"
         @input="handleInput"
         @focus="handleFocus"
@@ -46,7 +46,7 @@
       <!-- 图标 -->
       <span class="x-select__suffix">
         <IconClose
-          v-if="clearable && !disabled && hasValue"
+          v-if="clearable && !isDisabled && hasValue"
           class="x-select__clear"
           @click.stop="handleClear"
         />
@@ -59,7 +59,7 @@
   <Teleport to="body">
     <Transition name="x-select-dropdown">
       <div
-        v-show="dropdownVisible"
+        v-if="dropdownVisible"
         ref="floatingRef"
         :class="['x-select__dropdown', popperClass]"
         :style="floatingStyles"
@@ -176,7 +176,7 @@ import { IconClose, IconCheck, IconArrowDown } from '@x-design/icons';
 import { XTooltip } from '../tooltip';
 import { XCheckbox } from '../checkbox';
 import { usePopper } from '../_internal/popper';
-import { useClickOutside, useVirtualList } from '../_hooks';
+import { useClickOutside, useVirtualList, useFormItem } from '../_hooks';
 import type { SelectProps, SelectOption } from './types';
 
 defineOptions({
@@ -222,6 +222,9 @@ defineSlots<{
 }>();
 
 const $slots = useSlots();
+const { isFormDisabled, triggerValidation } = useFormItem();
+
+const isDisabled = computed(() => props.disabled || isFormDisabled.value);
 
 const referenceRef = ref<HTMLElement>();
 const floatingRef = ref<HTMLElement>();
@@ -258,7 +261,7 @@ const wrapperClasses = computed(() => [
   'x-select',
   `x-select--${props.size}`,
   {
-    'is-disabled': props.disabled,
+    'is-disabled': isDisabled.value,
     'is-focus': dropdownVisible.value,
     'is-multiple': props.multiple,
   },
@@ -405,7 +408,7 @@ const isIndeterminate = computed(() => {
 
 // 切换下拉框
 const toggleDropdown = () => {
-  if (props.disabled) return;
+  if (isDisabled.value) return;
   if (dropdownVisible.value) {
     closeDropdown();
   } else {
@@ -417,6 +420,7 @@ const toggleDropdown = () => {
 const closeDropdown = () => {
   hide();
   query.value = '';
+  triggerValidation('blur');
 };
 
 // 选择选项
@@ -439,6 +443,7 @@ const handleSelect = (option: SelectOption) => {
     selectedValue.value = values;
     emit('update:modelValue', values);
     emit('change', values);
+    triggerValidation('change');
 
     nextTick(() => {
       inputRef.value?.focus();
@@ -447,13 +452,14 @@ const handleSelect = (option: SelectOption) => {
     selectedValue.value = option.value;
     emit('update:modelValue', option.value);
     emit('change', option.value);
+    triggerValidation('change');
     closeDropdown();
   }
 };
 
 // 移除标签
 const removeTag = (option: SelectOption) => {
-  if (props.disabled) return;
+  if (isDisabled.value) return;
 
   const values = [...(selectedValue.value as (string | number)[])];
   const index = values.indexOf(option.value);
@@ -464,6 +470,7 @@ const removeTag = (option: SelectOption) => {
     emit('update:modelValue', values);
     emit('change', values);
     emit('removeTag', option.value);
+    triggerValidation('change');
   }
 };
 
@@ -474,6 +481,7 @@ const handleClear = () => {
   emit('update:modelValue', emptyValue);
   emit('change', emptyValue);
   emit('clear');
+  triggerValidation('change');
   closeDropdown();
 };
 
@@ -500,6 +508,7 @@ const handleCheckAll = () => {
     selectedValue.value = newValues;
     emit('update:modelValue', newValues);
     emit('change', newValues);
+    triggerValidation('change');
   } else {
     // 全选：添加所有未选中的可选选项
     const newValues = [...values];
@@ -514,6 +523,7 @@ const handleCheckAll = () => {
     selectedValue.value = newValues;
     emit('update:modelValue', newValues);
     emit('change', newValues);
+    triggerValidation('change');
   }
 };
 
