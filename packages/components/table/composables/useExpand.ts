@@ -1,61 +1,111 @@
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
+import type { TableRowKey } from '../types';
 
 /**
  * Table 展开行逻辑 composable
  */
 export function useExpand(
-  getRowKeyValue: (row: any) => any,
-  expandRowKeys?: () => (string | number)[] | undefined,
-  defaultExpandAll?: boolean,
+  getRowKeyValue: (row: any, index: number) => TableRowKey,
+  expandRowKeys?: () => TableRowKey[] | undefined
 ) {
-  const expandedRowKeys = ref<Set<string | number>>(new Set());
+  const expandedRowKeys = ref<Set<TableRowKey>>(new Set());
+  const isControlled = computed(() => !!expandRowKeys && expandRowKeys() !== undefined);
 
-  // 监听外部 expandRowKeys 变化
   if (expandRowKeys) {
     watch(
       expandRowKeys,
       (keys) => {
-        if (keys) {
+        if (keys !== undefined) {
           expandedRowKeys.value = new Set(keys);
         }
       },
-      { immediate: true },
+      { immediate: true }
     );
   }
 
-  const isRowExpanded = (row: any) => {
-    const rowKey = getRowKeyValue(row);
+  const isRowExpanded = (row: any, index = -1) => {
+    const rowKey = getRowKeyValue(row, index);
     return expandedRowKeys.value.has(rowKey);
   };
 
-  const toggleRowExpand = (row: any): boolean => {
-    const rowKey = getRowKeyValue(row);
-    const isExpanded = expandedRowKeys.value.has(rowKey);
-    if (isExpanded) {
-      expandedRowKeys.value.delete(rowKey);
-    } else {
-      expandedRowKeys.value.add(rowKey);
+  const updateExpandedKeys = (updater: (nextKeys: Set<TableRowKey>) => void) => {
+    const nextKeys = new Set(expandedRowKeys.value);
+    updater(nextKeys);
+
+    if (!isControlled.value) {
+      expandedRowKeys.value = nextKeys;
     }
-    return !isExpanded;
+
+    return [...nextKeys];
+  };
+
+  const toggleRowExpand = (row: any, index = -1): { expanded: boolean; rowKeys: TableRowKey[] } => {
+    const rowKey = getRowKeyValue(row, index);
+    let expanded = false;
+
+    const rowKeys = updateExpandedKeys((nextKeys) => {
+      if (nextKeys.has(rowKey)) {
+        nextKeys.delete(rowKey);
+        expanded = false;
+      } else {
+        nextKeys.add(rowKey);
+        expanded = true;
+      }
+    });
+
+    return { expanded, rowKeys };
+  };
+
+  const setExpandedRowKeys = (keys: TableRowKey[]) => {
+    if (isControlled.value) return;
+    expandedRowKeys.value = new Set(keys);
   };
 
   const expandAll = (data: any[], childrenKey = 'children') => {
-    const doExpand = (items: any[]) => {
-      items.forEach((item) => {
-        const rowKey = getRowKeyValue(item);
+    const keys: TableRowKey[] = [];
+
+    const doCollect = (items: any[]) => {
+      items.forEach((item, index) => {
+        const rowKey = getRowKeyValue(item, index);
         if (item[childrenKey]?.length) {
-          expandedRowKeys.value.add(rowKey);
-          doExpand(item[childrenKey]);
+          keys.push(rowKey);
+          doCollect(item[childrenKey]);
         }
       });
     };
-    doExpand(data);
+
+    doCollect(data);
+    setExpandedRowKeys(keys);
+    return keys;
+  };
+
+  const syncExpandedKeys = (rows: any[]) => {
+    const validKeys = new Set<TableRowKey>();
+    rows.forEach((row, index) => {
+      validKeys.add(getRowKeyValue(row, index));
+    });
+
+    const nextKeys = new Set<TableRowKey>();
+    expandedRowKeys.value.forEach((key) => {
+      if (validKeys.has(key)) {
+        nextKeys.add(key);
+      }
+    });
+
+    if (nextKeys.size !== expandedRowKeys.value.size && !isControlled.value) {
+      expandedRowKeys.value = nextKeys;
+    }
+
+    return [...nextKeys];
   };
 
   return {
     expandedRowKeys,
+    isControlled,
     isRowExpanded,
     toggleRowExpand,
+    setExpandedRowKeys,
     expandAll,
+    syncExpandedKeys,
   };
 }

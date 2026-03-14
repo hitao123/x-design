@@ -7,8 +7,12 @@ function parseColumnWidth(width: string | number | undefined): number {
   if (width === undefined) return 0;
   if (typeof width === 'number') return width;
   const num = parseFloat(width);
-  return isNaN(num) ? 0 : num;
+  return Number.isNaN(num) ? 0 : num;
 }
+
+const getColumnWidthForOffset = (column: TableColumn) => {
+  return parseColumnWidth(column.width) || parseColumnWidth(column.minWidth) || 100;
+};
 
 /**
  * Table 列配置处理 composable
@@ -19,12 +23,13 @@ export function useColumns(columns: () => TableColumn[]) {
    * 在 table-layout: fixed 下，未指定 width 的列会自动均分剩余宽度
    */
   const getColStyle = (column: TableColumn) => {
-    const style: any = {};
-    if (column.width) {
+    const style: Record<string, string> = {};
+    if (column.width !== undefined) {
       style.width = typeof column.width === 'number' ? `${column.width}px` : column.width;
     }
-    if (column.minWidth) {
-      style.minWidth = typeof column.minWidth === 'number' ? `${column.minWidth}px` : column.minWidth;
+    if (column.minWidth !== undefined) {
+      style.minWidth =
+        typeof column.minWidth === 'number' ? `${column.minWidth}px` : column.minWidth;
     }
     return style;
   };
@@ -36,7 +41,7 @@ export function useColumns(columns: () => TableColumn[]) {
   const getFixedStyle = (column: TableColumn, isHeader = false) => {
     if (!column.fixed) return undefined;
     const cols = columns();
-    const style: any = {
+    const style: Record<string, string | number> = {
       position: 'sticky',
       zIndex: isHeader ? 4 : 2,
     };
@@ -46,16 +51,16 @@ export function useColumns(columns: () => TableColumn[]) {
       for (const col of cols) {
         if (col === column) break;
         if (col.fixed === 'left') {
-          offset += parseColumnWidth(col.width);
+          offset += getColumnWidthForOffset(col);
         }
       }
       style.left = `${offset}px`;
     } else if (column.fixed === 'right') {
       let offset = 0;
       const colIndex = cols.indexOf(column);
-      for (let i = cols.length - 1; i > colIndex; i--) {
+      for (let i = cols.length - 1; i > colIndex; i -= 1) {
         if (cols[i].fixed === 'right') {
-          offset += parseColumnWidth(cols[i].width);
+          offset += getColumnWidthForOffset(cols[i]);
         }
       }
       style.right = `${offset}px`;
@@ -79,7 +84,7 @@ export function useColumns(columns: () => TableColumn[]) {
     const cols = columns();
     let total = 0;
     for (const col of cols) {
-      total += parseColumnWidth(col.width) || parseColumnWidth(col.minWidth) || 100;
+      total += getColumnWidthForOffset(col);
     }
     return `${total}px`;
   };
@@ -91,12 +96,12 @@ export function useColumns(columns: () => TableColumn[]) {
       'is-sortable': column.sortable,
       'is-fixed-left': column.fixed === 'left',
       'is-fixed-right': column.fixed === 'right',
-      'is-filterable': column.filters && column.filters.length > 0,
+      'is-filterable': !!column.filters?.length,
     },
   ];
 
   const getCellValue = (row: any, column: TableColumn, index: number) => {
-    const value = row[column.prop];
+    const value = column.prop ? row?.[column.prop] : undefined;
     if (column.formatter) {
       return column.formatter(row, column, value, index);
     }
@@ -109,7 +114,7 @@ export function useColumns(columns: () => TableColumn[]) {
 
   const getTreeColumnIndex = () => {
     return columns().findIndex(
-      (col) => !col.type || !['selection', 'index', 'expand'].includes(col.type),
+      (col) => !col.type || !['selection', 'index', 'expand'].includes(col.type)
     );
   };
 

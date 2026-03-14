@@ -1,0 +1,91 @@
+@use '../../theme/src/mixins/tabs.scss' as *;
+
+.x-tabs {
+  @include tabs-base;
+
+  &__header {
+    @include tabs-header;
+  }
+
+  &__nav-wrap {
+    @include tabs-nav-wrap;
+  }
+
+  &__nav {
+    @include tabs-nav;
+  }
+
+  &__item {
+    @include tabs-item;
+  }
+
+  &__active-bar {
+    @include tabs-active-bar;
+  }
+
+  &__close {
+    @include tabs-close;
+  }
+
+  &__new-tab {
+    @include tabs-new-tab;
+  }
+
+  &__content {
+    padding: 16px 0;
+  }
+
+  // line type
+  &--line {
+    .x-tabs__header {
+      border-bottom: 1px solid var(--x-tabs-border-color);
+    }
+  }
+
+  // card type
+  &--card {
+    @include tabs-type-card;
+
+    .x-tabs__header {
+      border-bottom: 1px solid var(--x-tabs-border-color);
+    }
+  }
+
+  // border-card type
+  &--border-card {
+    @include tabs-type-border-card;
+  }
+
+  // tabPosition bottom
+  &--bottom {
+    flex-direction: column-reverse;
+
+    .x-tabs__header {
+      border-bottom: none;
+      border-top: 1px solid var(--x-tabs-border-color);
+    }
+
+    .x-tabs__active-bar {
+      top: 0;
+      bottom: auto;
+    }
+
+    &.x-tabs--card {
+      .x-tabs__item {
+        border: 1px solid var(--x-tabs-border-color);
+        border-top: none;
+        border-bottom: 1px solid var(--x-tabs-border-color);
+        border-radius: 0 0 var(--x-border-radius-base) var(--x-border-radius-base);
+
+        &.is-active {
+          border-top-color: var(--x-bg-color);
+          background-color: var(--x-bg-color);
+        }
+      }
+    }
+  }
+}
+
+.x-tab-pane {
+  width: 100%;
+}

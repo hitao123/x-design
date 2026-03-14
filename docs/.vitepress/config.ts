@@ -61,6 +61,7 @@ export default defineConfig({
             { text: 'Pagination 分页', link: '/components/pagination' },
             { text: 'Tree 树形控件', link: '/components/tree' },
             { text: 'Tooltip 文字提示', link: '/components/tooltip' },
+            { text: 'Tabs 选项卡', link: '/components/tabs' },
           ],
         },
         {

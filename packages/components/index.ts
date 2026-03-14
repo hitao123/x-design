@@ -20,6 +20,7 @@ export { XPagination } from './pagination';
 export { XSwitch } from './switch';
 export { XTag } from './tag';
 export { XTagInput } from './tag-input';
+export { XTabs, XTabPane } from './tabs';
 
 import { XButton } from './button';
 import { XInput } from './input';
@@ -39,6 +40,7 @@ import { XPagination } from './pagination';
 import { XSwitch } from './switch';
 import { XTag } from './tag';
 import { XTagInput } from './tag-input';
+import { XTabs, XTabPane } from './tabs';
 
 const components = [
   XButton,
@@ -60,6 +62,8 @@ const components = [
   XSwitch,
   XTag,
   XTagInput,
+  XTabs,
+  XTabPane,
 ];
 
 const install = (app: App) => {
@@ -109,6 +113,7 @@ export type { PaginationProps } from './pagination';
 export type { SwitchProps, SwitchSize } from './switch';
 export type { TagProps, TagType, TagEffect, TagSize } from './tag';
 export type { TagInputProps } from './tag-input';
+export type { TabsProps, TabPaneProps, TabType, TabPosition } from './tabs';
 
 // Dialog 命令式方法导出
 export { confirm, info, success, warning, error } from './dialog';

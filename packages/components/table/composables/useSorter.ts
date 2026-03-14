@@ -1,5 +1,5 @@
-import { ref, computed } from 'vue';
-import type { TableColumn, SortState, SortOrder } from '../types';
+import { computed, ref } from 'vue';
+import type { TableColumn, SortOrder, SortState } from '../types';
 
 /**
  * Table 排序逻辑 composable
@@ -7,7 +7,7 @@ import type { TableColumn, SortState, SortOrder } from '../types';
 export function useSorter(
   data: () => any[],
   columns: () => TableColumn[],
-  defaultSort?: { prop: string; order: SortOrder },
+  defaultSort?: { prop: string; order: SortOrder }
 ) {
   const sortState = ref<SortState>({
     prop: defaultSort?.prop || '',
@@ -16,12 +16,16 @@ export function useSorter(
 
   const sortedData = computed(() => {
     const rawData = data();
-    if (!sortState.value.prop || !sortState.value.order) {
+    const { prop, order } = sortState.value;
+
+    if (!prop || !order) {
       return rawData;
     }
 
-    const column = columns().find((col) => col.prop === sortState.value.prop);
-    if (!column) return rawData;
+    const column = columns().find((col) => col.prop === prop);
+    if (!column || !column.sortable) {
+      return rawData;
+    }
 
     // custom 排序只触发事件，不处理数据
     if (column.sortable === 'custom') {
@@ -29,12 +33,14 @@ export function useSorter(
     }
 
     const sorted = [...rawData];
-    const order = sortState.value.order;
 
     return sorted.sort((a, b) => {
-      const aVal = a[sortState.value.prop];
-      const bVal = b[sortState.value.prop];
+      const aVal = a?.[prop];
+      const bVal = b?.[prop];
+
       if (aVal === bVal) return 0;
+      if (aVal == null) return order === 'ascending' ? -1 : 1;
+      if (bVal == null) return order === 'ascending' ? 1 : -1;
 
       let result = 0;
       if (typeof aVal === 'number' && typeof bVal === 'number') {
@@ -42,25 +48,27 @@ export function useSorter(
       } else {
         result = String(aVal).localeCompare(String(bVal));
       }
+
       return order === 'ascending' ? result : -result;
     });
   });
 
   const handleSort = (column: TableColumn): SortState => {
-    if (!column.sortable) return sortState.value;
+    if (!column.sortable || !column.prop) return { ...sortState.value };
 
     if (sortState.value.prop === column.prop) {
       if (sortState.value.order === 'ascending') {
         sortState.value.order = 'descending';
       } else if (sortState.value.order === 'descending') {
-        sortState.value.order = null;
-        sortState.value.prop = '';
+        sortState.value = { prop: '', order: null };
       } else {
         sortState.value.order = 'ascending';
       }
     } else {
-      sortState.value.prop = column.prop;
-      sortState.value.order = 'ascending';
+      sortState.value = {
+        prop: column.prop,
+        order: 'ascending',
+      };
     }
 
     return { ...sortState.value };

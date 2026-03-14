@@ -2,9 +2,13 @@ import type { VNode } from 'vue';
 
 export type SortOrder = 'ascending' | 'descending' | null;
 
+export type TableRowKey = string | number;
+
+export type TableRowKeyGetter = string | ((row: any) => TableRowKey);
+
 export interface TableColumn {
-  prop: string;
-  label: string;
+  prop?: string;
+  label?: string;
   width?: string | number;
   minWidth?: string | number;
   align?: 'left' | 'center' | 'right';
@@ -36,7 +40,7 @@ export interface TableProps {
   size?: 'small' | 'medium' | 'large';
   showHeader?: boolean;
   highlightCurrentRow?: boolean;
-  rowKey?: string;
+  rowKey?: TableRowKeyGetter;
   height?: string | number;
   maxHeight?: string | number;
   loading?: boolean;
@@ -45,9 +49,11 @@ export interface TableProps {
     order: SortOrder;
   };
   rowClassName?: string | ((row: any, index: number) => string);
-  cellClassName?: string | ((row: any, column: TableColumn, rowIndex: number, columnIndex: number) => string);
+  cellClassName?:
+    | string
+    | ((row: any, column: TableColumn, rowIndex: number, columnIndex: number) => string);
   showOverflowTooltip?: boolean;
-  expandRowKeys?: (string | number)[];
+  expandRowKeys?: TableRowKey[];
   defaultExpandAll?: boolean;
   treeProps?: {
     children?: string;
@@ -66,6 +72,11 @@ export interface TablePagination {
   pageSize?: number;
   total?: number;
   pageSizes?: number[];
+  layout?: string;
+  small?: boolean;
+  pagerCount?: number;
+  disabled?: boolean;
+  hideOnSinglePage?: boolean;
 }
 
 export interface SortState {

@@ -21,30 +21,24 @@
               :style="columnHelpers.getFixedStyle(column, true)"
             >
               <div class="x-table__cell-content">
-                <!-- 选择列 -->
                 <template v-if="column.type === 'selection'">
                   <XCheckbox
-                    :model-value="selection.isAllSelected.value"
-                    :indeterminate="selection.isIndeterminate.value"
+                    :model-value="headerSelectionState.allSelected"
+                    :indeterminate="headerSelectionState.indeterminate"
                     @change="onSelectAll"
                   />
                 </template>
-                <!-- 索引列 -->
                 <template v-else-if="column.type === 'index'">
                   {{ column.label || '#' }}
                 </template>
-                <!-- 展开列 -->
                 <template v-else-if="column.type === 'expand'">
                   {{ column.label || '' }}
                 </template>
-                <!-- 自定义表头插槽 -->
                 <template v-else-if="column.slots?.header">
                   <slot :name="column.slots.header" :column="column" />
                 </template>
-                <!-- 普通列 -->
                 <template v-else>
                   <span>{{ column.label }}</span>
-                  <!-- 排序图标 -->
                   <span v-if="column.sortable" class="x-table__sort-icons" @click="onSort(column)">
                     <i
                       class="x-table__sort-icon x-table__sort-icon--asc"
@@ -65,13 +59,12 @@
                       ><IconArrowDown
                     /></i>
                   </span>
-                  <!-- 筛选图标 -->
                   <TableFilter
-                    v-if="column.filters && column.filters.length > 0"
+                    v-if="column.prop && column.filters && column.filters.length > 0"
                     :filters="column.filters"
                     :filter-multiple="column.filterMultiple !== false"
                     :active-values="filter.getFilterValues(column.prop)"
-                    @filter="(values: any[]) => onFilter(column.prop, values)"
+                    @filter="(values: any[]) => onFilter(column.prop!, values)"
                   />
                 </template>
               </div>
@@ -87,19 +80,16 @@
                 :class="getCellClass(row, column, rowIndex, columnIndex)"
                 :style="columnHelpers.getFixedStyle(column)"
               >
-                <!-- 选择列 -->
                 <template v-if="column.type === 'selection'">
                   <XCheckbox
                     :model-value="selection.isRowSelected(row)"
-                    @change="() => onSelectRow(row)"
+                    @change="(checked: boolean) => onSelectRow(row, checked)"
                     @click.stop
                   />
                 </template>
-                <!-- 索引列 -->
                 <template v-else-if="column.type === 'index'">
                   {{ paginatedRowIndex(rowIndex) }}
                 </template>
-                <!-- 展开列 -->
                 <template v-else-if="column.type === 'expand'">
                   <span
                     class="x-table__expand-icon"
@@ -108,7 +98,6 @@
                     ><IconArrowRight
                   /></span>
                 </template>
-                <!-- 树形展开 -->
                 <template
                   v-else-if="
                     column.prop &&
@@ -129,20 +118,15 @@
                     <span>{{ columnHelpers.getCellValue(row, column, rowIndex) }}</span>
                   </div>
                 </template>
-                <!-- render 函数 -->
                 <template v-else-if="column.render">
                   <component :is="renderColumn(column, row, rowIndex)" />
                 </template>
-                <!-- 自定义列插槽 -->
                 <template v-else-if="column.slots?.default">
                   <slot
                     :name="column.slots.default"
-                    :row="row"
-                    :column="column"
-                    :$index="rowIndex"
+                    v-bind="{ row, column, rowIndex, index: rowIndex }"
                   />
                 </template>
-                <!-- 普通列 -->
                 <template v-else>
                   <span
                     :title="
@@ -156,7 +140,6 @@
                 </template>
               </td>
             </tr>
-            <!-- 展开行内容 -->
             <tr
               v-if="columnHelpers.hasExpandColumn() && expand.isRowExpanded(row)"
               class="x-table__expand-row"
@@ -176,17 +159,17 @@
         </tbody>
       </table>
     </div>
-    <!-- 分页 -->
-    <div v-if="pagination" class="x-table__pagination">
+    <div v-if="hasPagination" class="x-table__pagination">
       <XPagination
         :current="currentPage"
         :page-size="pageSize"
         :total="paginationTotal"
-        :page-sizes="(pagination as any).pageSizes"
-        :layout="(pagination as any).layout || 'total, prev, pager, next'"
-        :small="(pagination as any).small"
-        :pager-count="(pagination as any).pagerCount"
-        :disabled="(pagination as any).disabled"
+        :page-sizes="paginationConfig?.pageSizes"
+        :layout="paginationConfig?.layout || 'total, prev, pager, next'"
+        :small="paginationConfig?.small"
+        :pager-count="paginationConfig?.pagerCount"
+        :hide-on-single-page="paginationConfig?.hideOnSinglePage"
+        :disabled="paginationConfig?.disabled"
         @current-change="handlePageChange"
         @size-change="handlePageSizeChange"
       />
@@ -195,18 +178,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, reactive, onMounted, onBeforeUnmount, nextTick, type VNode } from 'vue';
-import { IconArrowUp, IconArrowDown, IconArrowRight } from '@x-design/icons';
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  watch,
+  type VNode,
+} from 'vue';
+import { IconArrowDown, IconArrowRight, IconArrowUp } from '@x-design/icons';
 import { XCheckbox } from '../checkbox';
 import { XPagination } from '../pagination';
-import type { TableProps, TableColumn, SortOrder } from './types';
+import { useColumns } from './composables/useColumns';
+import { useExpand } from './composables/useExpand';
+import { useFilter } from './composables/useFilter';
 import { useSelection } from './composables/useSelection';
 import { useSorter } from './composables/useSorter';
-import { useExpand } from './composables/useExpand';
 import { useTree } from './composables/useTree';
-import { useFilter } from './composables/useFilter';
-import { useColumns } from './composables/useColumns';
 import TableFilter from './TableFilter.vue';
+import type { SortOrder, TableColumn, TablePagination, TableProps, TableRowKey } from './types';
 
 defineOptions({
   name: 'XTable',
@@ -230,98 +222,124 @@ const emit = defineEmits<{
   rowClick: [row: any, index: number];
   selectionChange: [selection: any[]];
   sortChange: [sortState: { prop: string; order: SortOrder }];
-  expandChange: [row: any, expanded: boolean];
+  expandChange: [row: any, expanded: boolean, expandedRowKeys: TableRowKey[]];
   filterChange: [filters: Record<string, any[]>];
   paginationChange: [current: number, pageSize: number];
+  'update:expandRowKeys': [expandedRowKeys: TableRowKey[]];
 }>();
 
 const containerRef = ref<HTMLElement>();
 const currentRow = ref<any>(null);
 
-// rowKey 工具函数
-const getRowKeyValue = (row: any) => (props.rowKey ? row[props.rowKey] : row);
-const getRowKey = (row: any, index: number) => (props.rowKey ? row[props.rowKey] : index);
+const normalizedPagination = computed<TablePagination | null>(() => {
+  if (props.pagination && typeof props.pagination === 'object') {
+    return props.pagination;
+  }
+  return null;
+});
 
-// Composables
-const selection = useSelection(() => props.data, getRowKeyValue);
+const paginationConfig = computed(() => normalizedPagination.value);
+const hasPagination = computed(() => !!props.pagination);
+const isServerPagination = computed(() => normalizedPagination.value?.total !== undefined);
+
+const columnHelpers = useColumns(() => props.columns);
+
+const normalizeRowKey = (key: unknown, fallback: number): TableRowKey => {
+  if (typeof key === 'string' || typeof key === 'number') {
+    return key;
+  }
+  return fallback;
+};
+
+const allDataRows = ref<any[]>([]);
+
+const resolveFallbackRowIndex = (row: any, index: number) => {
+  const sourceIndex = allDataRows.value.indexOf(row);
+  if (sourceIndex >= 0) {
+    return sourceIndex;
+  }
+  return index;
+};
+
+const getRowKeyValue = (row: any, index: number): TableRowKey => {
+  const fallback = resolveFallbackRowIndex(row, index);
+
+  if (typeof props.rowKey === 'function') {
+    return normalizeRowKey(props.rowKey(row), fallback);
+  }
+
+  if (typeof props.rowKey === 'string') {
+    return normalizeRowKey(row?.[props.rowKey], fallback);
+  }
+
+  return fallback;
+};
+
+const getRowKey = (row: any, index: number) => getRowKeyValue(row, index);
+
+const expand = useExpand(getRowKeyValue, () => props.expandRowKeys);
+const tree = useTree(
+  () => props.treeProps,
+  (row) => expand.isRowExpanded(row)
+);
+
+const collectAllDataRows = () => {
+  allDataRows.value = props.treeProps ? tree.flattenAllRows(props.data) : props.data;
+};
+
+collectAllDataRows();
+
+const selection = useSelection(() => allDataRows.value, getRowKeyValue);
 const sorter = useSorter(
   () => props.data,
   () => props.columns,
   props.defaultSort
 );
-const expand = useExpand(getRowKeyValue, () => props.expandRowKeys, props.defaultExpandAll);
-const tree = useTree(
-  () => props.data,
-  () => props.treeProps,
-  expand.isRowExpanded
-);
 const filter = useFilter(
   () => sorter.sortedData.value,
   () => props.columns
 );
-const columnHelpers = useColumns(() => props.columns);
 
-// 初始化
-onMounted(() => {
-  if (props.defaultExpandAll && props.treeProps) {
-    expand.expandAll(props.data, props.treeProps?.children || 'children');
-  }
-  filter.initFilteredValues();
+const currentPage = ref(normalizedPagination.value?.current || 1);
+const pageSize = ref(normalizedPagination.value?.pageSize || 10);
 
-  // 初始化滚动状态
-  if (columnHelpers.hasFixedColumns() && containerRef.value) {
-    containerRef.value.addEventListener('scroll', handleScroll);
-    nextTick(() => handleScroll());
-  }
-});
-
-onBeforeUnmount(() => {
-  if (containerRef.value) {
-    containerRef.value.removeEventListener('scroll', handleScroll);
-  }
-});
-
-// 分页
-const currentPage = ref(props.pagination ? (props.pagination as any).current || 1 : 1);
-const pageSize = ref(props.pagination ? (props.pagination as any).pageSize || 10 : 10);
-
-const paginationTotal = computed(() => {
-  if (
-    props.pagination &&
-    typeof props.pagination === 'object' &&
-    props.pagination.total !== undefined
-  ) {
-    return props.pagination.total;
-  }
-  return filter.filteredData.value.length;
-});
-
-const totalPages = computed(() => Math.max(1, Math.ceil(paginationTotal.value / pageSize.value)));
-
-// 显示数据管线：过滤 -> 树形展开 -> 分页
-const displayData = computed(() => {
+const processedData = computed(() => {
   let data = filter.filteredData.value;
 
   if (props.treeProps) {
     data = tree.flattenTreeData(data);
   }
 
-  if (props.pagination) {
-    const start = (currentPage.value - 1) * pageSize.value;
-    data = data.slice(start, start + pageSize.value);
-  }
-
   return data;
 });
 
+const paginationTotal = computed(() => {
+  if (normalizedPagination.value?.total !== undefined) {
+    return normalizedPagination.value.total;
+  }
+  return processedData.value.length;
+});
+
+const totalPages = computed(() => Math.max(1, Math.ceil(paginationTotal.value / pageSize.value)));
+
+const displayData = computed(() => {
+  if (!hasPagination.value || isServerPagination.value) {
+    return processedData.value;
+  }
+
+  const start = (currentPage.value - 1) * pageSize.value;
+  return processedData.value.slice(start, start + pageSize.value);
+});
+
+const headerSelectionState = computed(() => selection.getSelectionState(displayData.value));
+
 const paginatedRowIndex = (rowIndex: number) => {
-  if (props.pagination) {
+  if (hasPagination.value) {
     return (currentPage.value - 1) * pageSize.value + rowIndex + 1;
   }
   return rowIndex + 1;
 };
 
-// Wrapper classes
 const wrapperClasses = computed(() => [
   'x-table',
   `x-table--${props.size}`,
@@ -333,7 +351,7 @@ const wrapperClasses = computed(() => [
 ]);
 
 const containerStyle = computed(() => {
-  const style: any = {};
+  const style: Record<string, string> = {};
   if (props.height) {
     style.height = typeof props.height === 'number' ? `${props.height}px` : props.height;
     style.overflowY = 'auto';
@@ -346,7 +364,6 @@ const containerStyle = computed(() => {
   return style;
 });
 
-// 滚动状态跟踪
 const scrollState = reactive({ left: false, right: false });
 
 const containerClasses = computed(() => [
@@ -358,7 +375,9 @@ const containerClasses = computed(() => [
 ]);
 
 const tableStyle = computed(() => {
-  const style: any = { tableLayout: props.tableLayout };
+  const style: Record<string, string> = {
+    tableLayout: props.tableLayout,
+  };
   const minWidth = columnHelpers.getTableMinWidth();
   if (minWidth) {
     style.minWidth = minWidth;
@@ -374,7 +393,6 @@ const handleScroll = () => {
   scrollState.right = scrollLeft + clientWidth < scrollWidth - 1;
 };
 
-// 行/单元格样式
 const getCellClass = (row: any, column: TableColumn, rowIndex: number, columnIndex: number) => {
   const classes: any[] = [
     'x-table__cell',
@@ -411,7 +429,6 @@ const getRowClass = (row: any, index: number) => {
   return classes;
 };
 
-// render 函数列
 const renderColumn = (column: TableColumn, row: any, index: number): VNode | string => {
   if (column.render) {
     return column.render({ row, column, $index: index }) as VNode | string;
@@ -419,20 +436,31 @@ const renderColumn = (column: TableColumn, row: any, index: number): VNode | str
   return '';
 };
 
-// 事件处理
+const emitSelectionChange = () => {
+  emit('selectionChange', selection.selectedRows.value);
+};
+
+const emitFilterChange = () => {
+  emit('filterChange', { ...filter.filterState.value });
+};
+
+const emitPaginationChange = () => {
+  emit('paginationChange', currentPage.value, pageSize.value);
+};
+
 const handleRowClick = (row: any, index: number) => {
   if (props.highlightCurrentRow) currentRow.value = row;
   emit('rowClick', row, index);
 };
 
 const onSelectAll = (checked: boolean) => {
-  selection.handleSelectAll(checked);
-  emit('selectionChange', selection.selectedRows.value);
+  selection.handleSelectAll(checked, displayData.value);
+  emitSelectionChange();
 };
 
-const onSelectRow = (row: any) => {
-  selection.handleSelectRow(row);
-  emit('selectionChange', selection.selectedRows.value);
+const onSelectRow = (row: any, checked?: boolean) => {
+  selection.handleSelectRow(row, checked);
+  emitSelectionChange();
 };
 
 const onSort = (column: TableColumn) => {
@@ -441,50 +469,145 @@ const onSort = (column: TableColumn) => {
 };
 
 const onExpandRow = (row: any) => {
-  const expanded = expand.toggleRowExpand(row);
-  emit('expandChange', row, expanded);
+  const { expanded, rowKeys } = expand.toggleRowExpand(row);
+  if (expand.isControlled) {
+    emit('update:expandRowKeys', rowKeys);
+  }
+  emit('expandChange', row, expanded, rowKeys);
 };
 
 const onFilter = (prop: string, values: any[]) => {
   filter.setFilter(prop, values);
-  emit('filterChange', { ...filter.filterState.value });
+  if (hasPagination.value && !isServerPagination.value) {
+    currentPage.value = 1;
+  }
+  emitFilterChange();
 };
 
 const handlePageChange = (page: number) => {
   if (page < 1 || page > totalPages.value) return;
   currentPage.value = page;
-  emit('paginationChange', currentPage.value, pageSize.value);
+  emitPaginationChange();
 };
 
 const handlePageSizeChange = (size: number) => {
   pageSize.value = size;
   currentPage.value = 1;
-  emit('paginationChange', currentPage.value, pageSize.value);
+  emitPaginationChange();
 };
 
-// 暴露方法
+watch(
+  () => props.columns,
+  () => {
+    filter.initFilteredValues();
+  },
+  { immediate: true, deep: true }
+);
+
+watch(
+  () => props.data,
+  () => {
+    collectAllDataRows();
+    selection.syncSelection();
+    expand.syncExpandedKeys(allDataRows.value);
+  },
+  { deep: true }
+);
+
+watch(
+  () => props.treeProps,
+  () => {
+    collectAllDataRows();
+    selection.syncSelection();
+    expand.syncExpandedKeys(allDataRows.value);
+  },
+  { deep: true }
+);
+
+watch(
+  () => normalizedPagination.value?.current,
+  (value) => {
+    if (typeof value === 'number' && value > 0) {
+      currentPage.value = value;
+    }
+  },
+  { immediate: true }
+);
+
+watch(
+  () => normalizedPagination.value?.pageSize,
+  (value) => {
+    if (typeof value === 'number' && value > 0) {
+      pageSize.value = value;
+    }
+  },
+  { immediate: true }
+);
+
+watch(
+  totalPages,
+  (nextTotalPages) => {
+    if (currentPage.value > nextTotalPages) {
+      currentPage.value = nextTotalPages;
+    }
+    if (currentPage.value < 1) {
+      currentPage.value = 1;
+    }
+  },
+  { immediate: true }
+);
+
+onMounted(() => {
+  if (props.defaultExpandAll && props.treeProps) {
+    const expandedKeys = expand.expandAll(props.data, props.treeProps?.children || 'children');
+    if (expand.isControlled) {
+      emit('update:expandRowKeys', expandedKeys);
+    }
+  }
+
+  if (columnHelpers.hasFixedColumns() && containerRef.value) {
+    containerRef.value.addEventListener('scroll', handleScroll);
+    nextTick(() => handleScroll());
+  }
+});
+
+onBeforeUnmount(() => {
+  if (containerRef.value) {
+    containerRef.value.removeEventListener('scroll', handleScroll);
+  }
+});
+
 defineExpose({
   clearSelection: () => {
     selection.clearSelection();
-    emit('selectionChange', []);
+    emitSelectionChange();
   },
   toggleRowSelection: (row: any, selected?: boolean) => {
     selection.toggleRowSelection(row, selected);
-    emit('selectionChange', selection.selectedRows.value);
+    emitSelectionChange();
   },
   toggleAllSelection: () => {
-    selection.toggleAllSelection();
-    emit('selectionChange', selection.selectedRows.value);
+    selection.toggleAllSelection(displayData.value);
+    emitSelectionChange();
   },
-  clearSort: () => sorter.clearSort(),
+  clearSort: () => {
+    sorter.clearSort();
+    emit('sortChange', { ...sorter.sortState.value });
+  },
   sort: (prop: string, order: SortOrder) => {
     const state = sorter.sort(prop, order);
     emit('sortChange', state);
   },
-  clearFilter: (prop?: string) => filter.clearFilter(prop),
+  clearFilter: (prop?: string) => {
+    filter.clearFilter(prop);
+    emitFilterChange();
+  },
   setFilter: (prop: string, values: any[]) => {
     filter.setFilter(prop, values);
-    emit('filterChange', { ...filter.filterState.value });
+    emitFilterChange();
+  },
+  toggleRowExpand: (row: any) => {
+    onExpandRow(row);
   },
 });
 </script>

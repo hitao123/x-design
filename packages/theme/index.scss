@@ -176,4 +176,9 @@
   // Switch 特定变量
   --x-switch-on-color: var(--x-color-primary);
   --x-switch-off-color: var(--x-border-color-base);
+
+  // Tabs 特定变量
+  --x-tabs-header-height: 40px;
+  --x-tabs-active-bar-color: var(--x-color-primary);
+  --x-tabs-border-color: var(--x-border-color-light);
 }
