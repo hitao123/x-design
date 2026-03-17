@@ -67,8 +67,6 @@ const value = ref('');
 
 ## 📖 文档
 
-完整文档请访问：[https://x-design.example.com](https://x-design.example.com)
-
 本地预览文档：
 
 ```bash
@@ -105,7 +103,7 @@ x-design/
 
 ```bash
 # 克隆项目
-git clone https://github.com/your-org/x-design.git
+git clone https://github.com/hitao123/x-design.git
 
 # 安装依赖
 pnpm install
@@ -124,4 +122,4 @@ pnpm build
 
 [MIT](./LICENSE)
 
-Copyright © 2024-present X Design Team
+Copyright © 2026-present X Design Team
